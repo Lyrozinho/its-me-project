@@ -55,7 +55,7 @@ export function DashboardMock() {
       <motion.div
         className="relative rounded-[2rem] bg-gradient-to-b from-[#1a1330] to-[#0f0a1f] p-3 border border-white/10 shadow-[0_25px_60px_-15px_rgba(91,61,245,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] will-change-transform"
         initial={{ rotateX: 0, rotateY: 0, y: 0 }}
-        variants={{ hover: { rotateX: 4, rotateY: -6, y: -6 } }}
+        variants={{ hover: { rotateX: 4, rotateY: 0, y: -6 } }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         style={{ transformStyle: "preserve-3d" }}
       >
