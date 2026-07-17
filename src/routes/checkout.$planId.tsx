@@ -151,105 +151,95 @@ function CheckoutPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-4 sm:p-8"
           >
-            {success ? (
-              <div className="py-10 text-center">
-                <div className="mx-auto h-14 w-14 rounded-full grid place-items-center bg-emerald-500/15 border border-emerald-400/30">
-                  <CheckCircle2 className="h-7 w-7 text-emerald-300" />
-                </div>
-                <h2 className="mt-5 text-2xl font-bold">Pedido criado</h2>
-                <p className="mt-2 text-sm text-white/60">
-                  Enviamos o PIX para <span className="text-white">{form.email}</span>. Após o pagamento, a extensão é liberada em segundos.
-                </p>
-                <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/10 px-4 py-2 text-xs font-mono tracking-wider text-white/80">
-                  Pedido {plan.id}-{Math.random().toString(36).slice(2, 7).toUpperCase()}
-                </div>
+            <form onSubmit={submit} className="space-y-5" noValidate>
+              <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-white/50 uppercase">
+                <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">1</span>
+                Dados do comprador
               </div>
-            ) : (
-              <form onSubmit={submit} className="space-y-5" noValidate>
-                <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-white/50 uppercase">
-                  <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">1</span>
-                  Dados do comprador
-                </div>
 
-                <Field label="Nome completo" icon={User} error={errors.name}>
+              <Field label="Nome completo" icon={User} error={errors.name}>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(e) => set("name", e.target.value)}
+                  placeholder="Como está no documento"
+                  autoComplete="name"
+                  className="input"
+                />
+              </Field>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label="E-mail" icon={Mail} error={errors.email}>
                   <input
                     required
-                    value={form.name}
-                    onChange={(e) => set("name", e.target.value)}
-                    placeholder="Como está no documento"
-                    autoComplete="name"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => set("email", e.target.value)}
+                    placeholder="voce@email.com"
+                    autoComplete="email"
                     className="input"
                   />
                 </Field>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field label="E-mail" icon={Mail} error={errors.email}>
-                    <input
-                      required
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => set("email", e.target.value)}
-                      placeholder="voce@email.com"
-                      autoComplete="email"
-                      className="input"
-                    />
-                  </Field>
-                  <Field label="Telefone" icon={Phone} error={errors.phone}>
-                    <input
-                      required
-                      inputMode="tel"
-                      value={form.phone}
-                      onChange={(e) => set("phone", maskPhone(e.target.value))}
-                      placeholder="(11) 91234-5678"
-                      autoComplete="tel"
-                      className="input"
-                    />
-                  </Field>
-                </div>
-
-                <Field label="CPF" icon={IdCard} error={errors.cpf}>
+                <Field label="Telefone" icon={Phone} error={errors.phone}>
                   <input
                     required
-                    inputMode="numeric"
-                    value={form.cpf}
-                    onChange={(e) => set("cpf", maskCPF(e.target.value))}
-                    placeholder="000.000.000-00"
+                    inputMode="tel"
+                    value={form.phone}
+                    onChange={(e) => set("phone", maskPhone(e.target.value))}
+                    placeholder="(11) 91234-5678"
+                    autoComplete="tel"
                     className="input"
                   />
                 </Field>
+              </div>
 
-                <div className="pt-3 flex items-center gap-2 text-[11px] font-bold tracking-wider text-white/50 uppercase">
-                  <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">2</span>
-                  Pagamento
+              <Field label="CPF" icon={IdCard} error={errors.cpf}>
+                <input
+                  required
+                  inputMode="numeric"
+                  value={form.cpf}
+                  onChange={(e) => set("cpf", maskCPF(e.target.value))}
+                  placeholder="000.000.000-00"
+                  className="input"
+                />
+              </Field>
+
+              <div className="pt-3 flex items-center gap-2 text-[11px] font-bold tracking-wider text-white/50 uppercase">
+                <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">2</span>
+                Pagamento
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                <div className="h-10 w-10 rounded-xl grid place-items-center bg-white shrink-0">
+                  <PixIcon className="h-6 w-6" />
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                  <div className="h-10 w-10 rounded-xl grid place-items-center bg-white shrink-0">
-                    <PixIcon className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold">PIX · Aprovação instantânea</div>
-                    <div className="text-[11px] sm:text-xs text-white/50 leading-snug">Liberação automática assim que o pagamento é confirmado.</div>
-                  </div>
-                  <span className="shrink-0 text-[10px] font-black tracking-wider rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-1">RECOMENDADO</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold">PIX · Aprovação instantânea</div>
+                  <div className="text-[11px] sm:text-xs text-white/50 leading-snug">Liberação automática assim que o pagamento é confirmado.</div>
                 </div>
+                <span className="shrink-0 text-[10px] font-black tracking-wider rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-1">RECOMENDADO</span>
+              </div>
+
+              {serverError && (
+                <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200">
+                  {serverError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
+              >
+                <PixIcon className="h-4 w-4" />
+                {submitting ? "Gerando Pix..." : `Pagar ${formatBRL(plan.price)} com Pix`}
+              </button>
 
 
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
-                >
-                  <PixIcon className="h-4 w-4" />
-                  {submitting ? "Processando..." : `Pagar ${formatBRL(plan.price)} com Pix`}
-                </button>
-
-
-                <p className="text-center text-[11px] text-white/40 inline-flex items-center gap-1.5 justify-center w-full">
-                  <ShieldCheck className="h-3 w-3 text-[#A78BFA]" />
-                  Seus dados são criptografados e usados apenas para emissão do pedido.
-                </p>
-              </form>
-            )}
+              <p className="text-center text-[11px] text-white/40 inline-flex items-center gap-1.5 justify-center w-full">
+                <ShieldCheck className="h-3 w-3 text-[#A78BFA]" />
+                Seus dados são criptografados e usados apenas para emissão do pedido.
+              </p>
+            </form>
           </motion.section>
 
           {/* SUMMARY */}
