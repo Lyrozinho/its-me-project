@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX, Maximize2, PlayCircle, CheckCircle2, Rocket } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 
+import tutorialCover from "@/assets/tutorial-cover.png.asset.json";
+
 const VIDEO_SRC =
   "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
@@ -143,6 +145,7 @@ export function VideoTutorial() {
             <video
               ref={videoRef}
               src={VIDEO_SRC}
+              poster={tutorialCover.url}
               muted={muted}
               playsInline
               preload="metadata"
