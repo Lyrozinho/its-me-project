@@ -20,8 +20,8 @@ type Plan = {
 
 const PLANS: Plan[] = [
   { duration: "1 DIA",   hours: "24 HORAS",  title: "Extensão Créditos Lovable Infinitos por 1 Dia (24h)",   description: "Extensão Unlimited para Lovable.dev. Tenha créditos infinitos e edite seus projetos sem limites.", price: 34.9,  old: 41.06,  stock: 10, sold: 886, image: loveHyro1d.url },
-  { duration: "3 DIAS",  hours: "72 HORAS",  title: "Extensão Créditos Lovable Infinitos por 3 Dias (72h)",  description: "Extensão Unlimited para Lovable.dev. Créditos infinitos por três dias direto no seu navegador.", price: 69.9,  old: 82.24,  stock: 10, sold: 240 },
-  { duration: "7 DIAS",  hours: "168 HORAS", title: "Extensão Créditos Lovable Infinitos por 7 Dias (168h)", description: "Extensão Unlimited para Lovable.dev. Uma semana completa de créditos ilimitados e ativação automática.", price: 98.9,  old: 116.35, stock: 10, sold: 398 },
+  { duration: "3 DIAS",  hours: "72 HORAS",  title: "Extensão Créditos Lovable Infinitos por 3 Dias (72h)",  description: "Extensão Unlimited para Lovable.dev. Créditos infinitos por três dias direto no seu navegador.", price: 69.9,  old: 82.24,  stock: 10, sold: 240, image: loveHyro3d.url },
+  { duration: "7 DIAS",  hours: "168 HORAS", title: "Extensão Créditos Lovable Infinitos por 7 Dias (168h)", description: "Extensão Unlimited para Lovable.dev. Uma semana completa de créditos ilimitados e ativação automática.", price: 98.9,  old: 116.35, stock: 10, sold: 398, image: loveHyro7d.url },
   { duration: "15 DIAS", hours: "360 HORAS", title: "Extensão Créditos Lovable Infinitos por 15 Dias (360h)", description: "Extensão Unlimited para Lovable.dev. Duas semanas de fluxo sem interrupções para projetos grandes.", price: 169.9, old: 199.9,  stock: 8,  sold: 512 },
   { duration: "30 DIAS", hours: "720 HORAS", title: "Extensão Créditos Lovable Infinitos por 30 Dias (720h)", description: "Extensão Unlimited para Lovable.dev. Um mês inteiro de créditos infinitos, o plano preferido dos pros.", price: 289.9, old: 349.9,  stock: 6,  sold: 731 },
 ];
