@@ -150,7 +150,7 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
                 <div className="mt-5 rounded-2xl border border-white/10 bg-white p-3 grid place-items-center">
                   {charge.qrCodeBase64 ? (
                     <img
-                      src={`data:image/png;base64,${charge.qrCodeBase64}`}
+                      src={charge.qrCodeBase64.startsWith("data:") ? charge.qrCodeBase64 : `data:image/png;base64,${charge.qrCodeBase64}`}
                       alt="QR Code PIX"
                       width={220}
                       height={220}
