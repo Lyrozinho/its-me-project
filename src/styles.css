@@ -87,6 +87,16 @@
     text-rendering: optimizeLegibility;
   }
   ::selection { background: color-mix(in oklab, var(--violet-mid) 55%, transparent); color: white; }
+
+  /* Transparent, minimal scrollbars everywhere */
+  * { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+  *:hover { scrollbar-color: oklch(0.78 0.16 292 / 0.25) transparent; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; transition: background .2s; }
+  *:hover::-webkit-scrollbar-thumb { background: oklch(0.78 0.16 292 / 0.22); }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.78 0.16 292 / 0.4); }
+  ::-webkit-scrollbar-corner { background: transparent; }
 }
 
 @utility glass {

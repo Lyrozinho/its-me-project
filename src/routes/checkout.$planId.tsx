@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, CreditCard, User, Mail, Phone, IdCard } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 import { Footer } from "@/components/genesis/Footer";
@@ -102,7 +102,7 @@ function CheckoutPage() {
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
       <Background />
       <Navbar />
-      <main className="mx-auto max-w-7xl px-5 lg:px-8 pt-32 pb-20 lg:pt-36">
+      <main className="mx-auto max-w-7xl px-5 lg:px-8 pt-24 pb-20 lg:pt-28">
         <div className="flex items-center justify-between gap-4">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors">
             <ArrowLeft className="h-4 w-4" /> Voltar
@@ -114,9 +114,10 @@ function CheckoutPage() {
 
         <motion.h1
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="mt-8 text-3xl sm:text-4xl font-bold tracking-tight"
+          className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight"
         >
           Finalize sua <span className="text-gradient">compra</span>
+
         </motion.h1>
         <p className="mt-2 text-sm text-white/55">Preencha seus dados. A ativação é automática após o pagamento via PIX.</p>
 
@@ -148,6 +149,7 @@ function CheckoutPage() {
 
                 <Field label="Nome completo" icon={User} error={errors.name}>
                   <input
+                    required
                     value={form.name}
                     onChange={(e) => set("name", e.target.value)}
                     placeholder="Como está no documento"
@@ -159,6 +161,7 @@ function CheckoutPage() {
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Field label="E-mail" icon={Mail} error={errors.email}>
                     <input
+                      required
                       type="email"
                       value={form.email}
                       onChange={(e) => set("email", e.target.value)}
@@ -169,6 +172,7 @@ function CheckoutPage() {
                   </Field>
                   <Field label="Telefone" icon={Phone} error={errors.phone}>
                     <input
+                      required
                       inputMode="tel"
                       value={form.phone}
                       onChange={(e) => set("phone", maskPhone(e.target.value))}
@@ -181,6 +185,7 @@ function CheckoutPage() {
 
                 <Field label="CPF" icon={IdCard} error={errors.cpf}>
                   <input
+                    required
                     inputMode="numeric"
                     value={form.cpf}
                     onChange={(e) => set("cpf", maskCPF(e.target.value))}
@@ -194,11 +199,11 @@ function CheckoutPage() {
                   Pagamento
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl grid place-items-center bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5]">
-                    <CreditCard className="h-5 w-5" />
+                  <div className="h-10 w-10 rounded-xl grid place-items-center bg-white">
+                    <PixIcon className="h-6 w-6" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold">PIX - Aprovação instantânea</div>
+                    <div className="text-sm font-semibold">PIX · Aprovação instantânea</div>
                     <div className="text-xs text-white/50">Liberação automática assim que o pagamento é confirmado.</div>
                   </div>
                   <span className="text-[10px] font-black tracking-wider rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-1">RECOMENDADO</span>
@@ -207,10 +212,12 @@ function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="mt-2 w-full h-14 rounded-2xl text-sm font-black tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_16px_40px_-16px_rgba(91,61,245,0.9)] hover:brightness-110 hover:-translate-y-0.5 transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+                  className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
                 >
-                  {submitting ? "PROCESSANDO..." : `PAGAR ${formatBRL(plan.price)} COM PIX`}
+                  <PixIcon className="h-4 w-4" monochrome />
+                  {submitting ? "Processando..." : `Pagar ${formatBRL(plan.price)} com Pix`}
                 </button>
+
 
                 <p className="text-center text-[11px] text-white/40 inline-flex items-center gap-1.5 justify-center w-full">
                   <ShieldCheck className="h-3 w-3 text-[#A78BFA]" />
@@ -324,3 +331,16 @@ function Row({ label, value, muted, accent }: { label: string; value: string; mu
     </div>
   );
 }
+
+function PixIcon({ className, monochrome }: { className?: string; monochrome?: boolean }) {
+  // Official Pix mark (Banco Central do Brasil) — stylized rotated square with 4 arrow-like notches.
+  const c = monochrome ? "currentColor" : "#32BCAD";
+  return (
+    <svg className={className} viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-label="Pix" role="img">
+      <path fill={c} d="M242.4 292.5c7.5 7.5 19.7 7.5 27.2 0l67.2-67.2c3-3 7-4.6 11.2-4.6h8.2L271.8 141.3c-8.7-8.7-22.9-8.7-31.6 0L155.9 220.7h4.9c4.2 0 8.2 1.7 11.2 4.6l70.4 67.2z"/>
+      <path fill={c} d="M269.6 373.7c-7.5 7.5-19.7 7.5-27.2 0l-70.4-70.4c-3-3-7-4.6-11.2-4.6h-11.2L233.9 383c8.7 8.7 22.9 8.7 31.6 0l84.2-84.2h-8.2c-4.2 0-8.2-1.7-11.2-4.6l-60.7 79.5z"/>
+      <path fill={c} d="M383.9 220.7l-50.7 0-58.3 58.3c-11.6 11.6-30.6 11.6-42.2 0l-58.3-58.3-50.7 0-33.6 33.6c-8.7 8.7-8.7 22.9 0 31.6l33.6 33.6 50.7 0 58.3-58.3c11.6-11.6 30.6-11.6 42.2 0l58.3 58.3 50.7 0 33.6-33.6c8.7-8.7 8.7-22.9 0-31.6l-33.6-33.6z"/>
+    </svg>
+  );
+}
+
