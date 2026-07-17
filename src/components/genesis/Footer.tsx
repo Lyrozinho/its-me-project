@@ -5,10 +5,10 @@ export function Footer() {
         <div className="flex items-center gap-2.5">
           <div className="relative h-7 w-7 rounded-md bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
             <div className="absolute inset-0 rounded-md blur-md bg-[#7A5CFF]/50 -z-10" />
-            <span className="text-white text-[11px] font-black">G</span>
+            <span className="text-white text-[11px] font-black">L</span>
           </div>
           <span className="text-xs text-white/50">
-            © {new Date().getFullYear()} Genesis Hub. Todos os direitos reservados.
+            © {new Date().getFullYear()} Love Hyro. Todos os direitos reservados.
           </span>
         </div>
         <a href="#" className="text-xs text-white/60 hover:text-white transition-colors">
