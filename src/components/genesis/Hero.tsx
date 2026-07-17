@@ -23,17 +23,17 @@ export function Hero() {
               initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
               className="mt-5 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.03em] leading-[1.02]"
             >
-              Escale seu negócio<br />
-              digital com o<br />
-              <span className="text-gradient">Genesis Hub</span>
+              Congele seus<br />
+              créditos com a<br />
+              <span className="text-gradient">Extensão</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-6 max-w-lg text-base sm:text-lg text-white/60 leading-relaxed"
             >
-              A plataforma completa para revendedores e criadores digitais. Produtos premium,
-              entrega automática e pagamento via PIX com liberação instantânea.
+              A ferramenta essencial pra quem não aceita perder créditos. Ative o
+              congelamento instantâneo no seu navegador, com PIX e liberação na hora.
             </motion.p>
 
             <motion.div
