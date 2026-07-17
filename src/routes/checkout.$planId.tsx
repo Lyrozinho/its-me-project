@@ -299,6 +299,8 @@ function CheckoutPage() {
       </main>
       <Footer />
 
+      {charge && <PixModal charge={charge} onClose={() => setCharge(null)} />}
+
       <style>{`
         .input {
           width: 100%;
