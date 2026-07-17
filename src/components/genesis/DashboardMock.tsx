@@ -7,36 +7,66 @@ export function DashboardMock() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      className="relative mx-auto w-full max-w-[480px]"
+      whileHover="hover"
+      className="group relative mx-auto w-full max-w-[480px] [perspective:1200px]"
     >
-      {/* Outer purple ambient glow */}
-      <div
+      {/* Outer purple ambient glow — intensifies on hover */}
+      <motion.div
         aria-hidden
-        className="absolute -inset-8 -z-20 rounded-[2.75rem] opacity-80"
+        className="absolute -inset-8 -z-20 rounded-[2.75rem]"
         style={{
           background:
             "radial-gradient(closest-side, rgba(122,92,255,0.45), rgba(122,92,255,0.10) 55%, transparent 75%)",
           filter: "blur(28px)",
         }}
+        initial={{ opacity: 0.6, scale: 1 }}
+        variants={{ hover: { opacity: 1, scale: 1.08 } }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       />
 
-      {/* Stacked back plate (offset shadow card, like the reference) */}
-      <div
+      {/* Stacked back plate — slides further on hover */}
+      <motion.div
         aria-hidden
-        className="absolute inset-0 -z-10 translate-x-3 translate-y-4 rounded-[2rem] bg-[#0f0a1f] border border-white/[0.06] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]"
+        className="absolute inset-0 -z-10 rounded-[2rem] bg-[#0f0a1f] border border-white/[0.06] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]"
+        initial={{ x: 12, y: 16 }}
+        variants={{ hover: { x: 18, y: 22 } }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       />
 
-      {/* Bezel / frame */}
-      <div className="relative rounded-[2rem] bg-gradient-to-b from-[#1a1330] to-[#0f0a1f] p-3 border border-white/10 shadow-[0_25px_60px_-15px_rgba(91,61,245,0.35),inset_0_1px_0_rgba(255,255,255,0.06)]">
+      {/* Bezel — subtle 3D tilt + lift on hover */}
+      <motion.div
+        className="relative rounded-[2rem] bg-gradient-to-b from-[#1a1330] to-[#0f0a1f] p-3 border border-white/10 shadow-[0_25px_60px_-15px_rgba(91,61,245,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] will-change-transform"
+        initial={{ rotateX: 0, rotateY: 0, y: 0 }}
+        variants={{ hover: { rotateX: 4, rotateY: -6, y: -6 } }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
         <div className="relative rounded-[1.4rem] overflow-hidden aspect-square bg-[#0d0819]">
-          <img
+          <motion.img
             src={heroVisual.url}
             alt="Genesis Hub"
             width={1024}
             height={1024}
             className="h-full w-full object-cover"
+            initial={{ scale: 1 }}
+            variants={{ hover: { scale: 1.06 } }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           />
-          {/* subtle inner highlight */}
+
+          {/* Sheen sweep on hover */}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 skew-x-[-20deg]"
+            style={{
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+            }}
+            initial={{ x: "-40%", opacity: 0 }}
+            variants={{ hover: { x: "320%", opacity: 1 } }}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          />
+
+          {/* Inner highlights */}
           <div className="pointer-events-none absolute inset-0 rounded-[1.4rem] ring-1 ring-inset ring-white/10" />
           <div
             aria-hidden
@@ -47,7 +77,7 @@ export function DashboardMock() {
             }}
           />
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
