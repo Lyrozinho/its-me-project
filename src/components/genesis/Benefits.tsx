@@ -64,7 +64,7 @@ export function Benefits() {
             <Star className="h-3.5 w-3.5" />
             Por que a Love Hyro
           </div>
-          <h2 className="mt-5 text-4xl sm:text-5xl font-semibold tracking-tight max-w-3xl">
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight max-w-3xl">
             A plataforma feita para <span className="text-gradient">entregar rápido</span>
           </h2>
           <p className="mt-4 text-white/60 max-w-xl">
