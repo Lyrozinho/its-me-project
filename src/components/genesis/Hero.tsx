@@ -55,8 +55,8 @@ export function Hero() {
               className="mt-12 grid grid-cols-3 gap-8 max-w-md"
             >
               {[
-                { k: "+18k", v: "Pedidos entregues" },
-                { k: "+10k", v: "Clientes ativos" },
+                { k: "+2k", v: "Pedidos entregues" },
+                { k: "+4k", v: "Clientes ativos" },
                 { k: "24/7", v: "Suporte dedicado" },
               ].map((s) => (
                 <div key={s.v}>
