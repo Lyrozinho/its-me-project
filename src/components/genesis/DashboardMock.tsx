@@ -24,12 +24,21 @@ export function DashboardMock() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       />
 
-      {/* Stacked back plate — slides further on hover */}
+      {/* Stacked back plate (right) — slides further on hover */}
       <motion.div
         aria-hidden
         className="absolute inset-0 -z-10 rounded-[2rem] bg-[#0f0a1f] border border-white/[0.06] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]"
         initial={{ x: 12, y: 16 }}
         variants={{ hover: { x: 18, y: 22 } }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      />
+
+      {/* Stacked back plate (left) — mirrored for symmetry */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 -z-10 rounded-[2rem] bg-[#0f0a1f] border border-white/[0.06] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]"
+        initial={{ x: -12, y: 16 }}
+        variants={{ hover: { x: -18, y: 22 } }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       />
 
