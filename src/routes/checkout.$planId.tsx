@@ -234,8 +234,8 @@ function CheckoutPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.05 }}
             className="lg:sticky lg:top-28 h-fit rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl overflow-hidden"
           >
-            <div className="relative p-4">
-              <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden border border-white/10">
+            <div className="relative p-3 sm:p-4">
+              <div className="relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-white/10">
                 <img src={plan.image} alt={plan.title} className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
                 <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7A5CFF] to-[#5B3DF5] px-3 py-1 text-[11px] font-black text-white">
@@ -247,7 +247,8 @@ function CheckoutPage() {
               </div>
             </div>
 
-            <div className="px-6 pb-6">
+            <div className="px-5 sm:px-6 pb-5 sm:pb-6">
+
               <div className="text-[10px] font-bold tracking-wider text-white/40 uppercase">Resumo do pedido</div>
               <h2 className="mt-2 text-lg font-black leading-snug">{plan.title}</h2>
               <p className="mt-1.5 text-[13px] text-white/55 leading-relaxed">{plan.description}</p>
