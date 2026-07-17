@@ -123,81 +123,111 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -6 }}
-      className="group relative snap-start shrink-0 w-[300px] sm:w-[340px] rounded-3xl glass overflow-hidden border border-white/10 transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_rgba(91,61,245,0.55)]"
+      className="group relative snap-start shrink-0 w-[320px] sm:w-[360px] rounded-3xl overflow-hidden border border-white/10 bg-[#0F0A20] transition-shadow duration-500 hover:shadow-[0_30px_80px_-20px_rgba(91,61,245,0.6)]"
     >
-      <div className="gradient-border-inner rounded-3xl" />
-
       {/* Visual header */}
-      <div className="relative h-64 overflow-hidden bg-gradient-to-br from-[#1D1638] via-[#131024] to-[#0B0715]">
-        <div className="absolute inset-0 grid-tech opacity-40" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(122,92,255,0.35),transparent_55%)]" />
-        <div className="absolute -top-20 -right-16 h-56 w-56 rounded-full bg-[#5B3DF5]/30 blur-3xl" />
+      <div className="relative m-3 h-[360px] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#1A1236] via-[#120C24] to-[#0A0616]">
+        <div className="absolute inset-0 grid-tech opacity-30" />
+        <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-[#5B3DF5]/40 blur-3xl" />
+        <div className="absolute -bottom-20 -left-16 h-56 w-56 rounded-full bg-[#7A5CFF]/25 blur-3xl" />
 
-        {/* Badges top */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-          <span className="inline-flex items-center rounded-full bg-gradient-to-r from-[#7A5CFF] to-[#5B3DF5] px-2.5 py-1 text-[10px] font-bold text-white shadow-[0_6px_20px_-6px_rgba(91,61,245,0.9)]">
-            -15% OFF
+        {/* Top badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7A5CFF] to-[#5B3DF5] px-3 py-1 text-[11px] font-black text-white shadow-[0_6px_20px_-6px_rgba(91,61,245,0.9)]">
+            <Zap className="h-3 w-3" /> -15% OFF
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-black/50 backdrop-blur px-2.5 py-1 text-[10px] font-semibold text-white/90 border border-white/10">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur px-3 py-1 text-[11px] font-bold text-white/90 border border-white/10">
             <Clock className="h-3 w-3" /> {plan.duration}
           </span>
         </div>
 
-        {/* Centerpiece: big duration */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-5 text-center">
-          <div className="text-[11px] font-semibold tracking-[0.3em] text-white/50">EXTENSÃO</div>
-          <div className="mt-1 text-4xl sm:text-5xl font-black tracking-tight leading-none">
-            <span className="text-gradient">CRÉDITOS</span>
+        {/* Big diagonal title */}
+        <div className="absolute top-4 right-3 text-right leading-[0.85] select-none z-10">
+          <div className="text-[11px] font-bold tracking-[0.25em] text-white/40">EXTENSÃO</div>
+          <div className="mt-1 text-[32px] font-black italic tracking-tight text-gradient drop-shadow-[0_4px_20px_rgba(122,92,255,0.35)]">
+            CRÉDITOS
           </div>
-          <div className="text-4xl sm:text-5xl font-black tracking-tight leading-none mt-1">INFINITOS</div>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full glass-strong px-3 py-1 text-[11px] font-semibold text-white/90 border border-white/15">
-            <Zap className="h-3 w-3 text-[#A78BFA]" /> LOVABLE • {plan.duration}
+          <div className="text-[36px] font-black italic tracking-tight text-white drop-shadow-[0_4px_20px_rgba(122,92,255,0.35)]">
+            INFINITOS
+          </div>
+          <div className="mt-2 inline-flex items-center gap-2 text-[13px] font-black tracking-wider text-white/85 justify-end">
+            LOVABLE
+            <span className="rounded-md bg-white/10 border border-white/15 px-2 py-0.5 text-[11px] text-white">
+              {plan.hours.replace(" HORAS", "h")}
+            </span>
           </div>
         </div>
 
-        {/* Feature strip */}
-        <div className="absolute inset-x-3 bottom-3 rounded-xl glass-strong border border-white/10 px-3 py-2 grid grid-cols-4 gap-2">
+        {/* Feature list left column */}
+        <div className="absolute left-3 top-[120px] flex flex-col gap-2.5 z-10">
           {FEATURES.map((f, i) => (
-            <div key={i} className="flex flex-col items-center text-center">
-              <f.icon className="h-3.5 w-3.5 text-[#A78BFA]" />
-              <div className="mt-1 text-[8px] font-bold tracking-wider text-white/80 leading-tight">{f.label}</div>
-              <div className="text-[8px] font-semibold text-white/50 leading-tight">
-                {i === 3 ? plan.hours : f.value}
+            <div key={i} className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-full grid place-items-center bg-white/5 border border-[#A78BFA]/30 shadow-[0_0_20px_-6px_rgba(167,139,250,0.6)]">
+                <f.icon className="h-3.5 w-3.5 text-[#A78BFA]" />
+              </div>
+              <div className="leading-tight">
+                <div className="text-[9px] font-black tracking-wider text-white/85">{f.label}</div>
+                <div className="text-[9px] font-semibold text-white/45">
+                  {i === 3 ? plan.hours : f.value}
+                </div>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Bottom duration pill */}
+        <div className="absolute bottom-3 left-3 z-10 flex items-center gap-3 rounded-2xl bg-black/60 backdrop-blur border border-white/10 px-3 py-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]">
+          <div className="h-9 w-9 rounded-full grid place-items-center bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] shadow-[0_6px_20px_-6px_rgba(91,61,245,0.9)]">
+            <Clock className="h-4 w-4 text-white" />
+          </div>
+          <div className="leading-tight">
+            <div className="text-lg font-black text-white">{plan.duration}</div>
+            <div className="text-[10px] font-semibold text-white/50">({plan.hours})</div>
+          </div>
+        </div>
+
+        {/* Decorative orb (character replacement) */}
+        <motion.div
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-6 right-6 h-28 w-28 pointer-events-none"
+        >
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#A78BFA] via-[#7A5CFF] to-[#5B3DF5] opacity-90" />
+          <div className="absolute inset-[6px] rounded-full bg-gradient-to-br from-[#1A1236] to-[#0A0616] border border-white/10 grid place-items-center">
+            <InfinityIcon className="h-12 w-12 text-white drop-shadow-[0_0_20px_rgba(167,139,250,0.9)]" strokeWidth={2.5} />
+          </div>
+          <div className="absolute -inset-4 rounded-full bg-[#7A5CFF]/30 blur-2xl -z-10" />
+        </motion.div>
       </div>
 
       {/* Body */}
-      <div className="relative p-5">
-        {/* Meta row */}
-        <div className="flex items-center gap-3 text-[11px] font-semibold">
+      <div className="relative px-5 pb-5 pt-1">
+        <div className="flex items-center gap-3 text-[11px] font-bold">
           <span className="inline-flex items-center gap-1 text-emerald-300">
             <CheckCircle2 className="h-3 w-3" /> AUTO
           </span>
-          <span className="text-white/30">•</span>
-          <span className="text-white/70">ESTOQUE: <span className="text-white font-bold">{plan.stock}</span></span>
-          <span className="text-white/30">•</span>
-          <span className="text-white/70">VENDIDAS: <span className="text-[#A78BFA] font-bold">{plan.sold}</span></span>
+          <span className="text-white/25">•</span>
+          <span className="text-white/60">ESTOQUE: <span className="text-white font-black">{plan.stock}</span></span>
+          <span className="text-white/25">•</span>
+          <span className="text-white/60">VENDIDAS: <span className="text-[#A78BFA] font-black">{plan.sold}</span></span>
         </div>
 
-        <h3 className="mt-3 text-[15px] font-bold tracking-tight leading-snug text-gradient">
+        <h3 className="mt-3 text-[16px] font-black tracking-tight leading-snug text-white">
           {plan.title}
         </h3>
-        <p className="mt-2 text-[13px] text-white/55 leading-relaxed line-clamp-2">
+        <p className="mt-2 text-[13px] text-white/50 leading-relaxed line-clamp-2">
           {plan.description}
         </p>
 
         <div className="mt-5 flex items-end justify-between gap-3">
           <div>
-            <div className="text-xs text-white/40 line-through">R$ {plan.old.toFixed(2).replace(".", ",")}</div>
-            <div className="text-2xl font-black tracking-tight">
+            <div className="text-xs text-white/35 line-through">R$ {plan.old.toFixed(2).replace(".", ",")}</div>
+            <div className="text-3xl font-black tracking-tight">
               R$ <span className="text-gradient">{plan.price.toFixed(2).replace(".", ",")}</span>
             </div>
           </div>
-          <button className="inline-flex items-center gap-2 h-11 px-4 rounded-full text-xs font-bold tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.8)] hover:brightness-110 hover:-translate-y-0.5 transition-all">
-            <ShoppingBag className="h-4 w-4" /> COMPRAR
+          <button className="inline-flex items-center gap-2 h-12 px-5 rounded-full text-[13px] font-black tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.9)] hover:brightness-110 hover:-translate-y-0.5 transition-all">
+            COMPRAR <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
