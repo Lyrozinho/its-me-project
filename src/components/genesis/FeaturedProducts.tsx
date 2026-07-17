@@ -244,14 +244,19 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
 
         <div className="mt-5 flex items-end justify-between gap-3">
           <div>
-            <div className="text-xs text-white/35 line-through">R$ {plan.old.toFixed(2).replace(".", ",")}</div>
+            <div className="text-xs text-white/35 line-through">{formatBRL(plan.old)}</div>
             <div className="text-3xl font-black tracking-tight">
-              R$ <span className="text-gradient">{plan.price.toFixed(2).replace(".", ",")}</span>
+              <span className="text-gradient">{formatBRL(plan.price)}</span>
             </div>
           </div>
-          <button className="inline-flex items-center gap-2 h-12 px-5 rounded-full text-[13px] font-black tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.9)] hover:brightness-110 hover:-translate-y-0.5 transition-all">
+          <Link
+            to="/checkout/$planId"
+            params={{ planId: plan.id }}
+            className="inline-flex items-center gap-2 h-12 px-5 rounded-full text-[13px] font-black tracking-wider text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.9)] hover:brightness-110 hover:-translate-y-0.5 transition-all"
+          >
             COMPRAR <ChevronRight className="h-4 w-4" />
-          </button>
+          </Link>
+
         </div>
       </div>
       </div>
