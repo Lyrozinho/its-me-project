@@ -103,8 +103,8 @@ function CheckoutPage() {
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
       <Background />
       <Navbar />
-      <main className="mx-auto max-w-7xl px-5 lg:px-8 pt-24 pb-20 lg:pt-28">
-        <div className="flex items-center justify-between gap-4">
+      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-20 sm:pt-24 pb-16 lg:pt-28">
+        <div className="flex items-center justify-between gap-3">
           <Link to="/" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors">
             <ArrowLeft className="h-4 w-4" /> Voltar
           </Link>
@@ -115,14 +115,14 @@ function CheckoutPage() {
 
         <motion.h1
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight"
+          className="mt-4 text-[26px] sm:text-4xl font-bold tracking-tight leading-tight"
         >
           Finalize sua <span className="text-gradient">compra</span>
-
         </motion.h1>
-        <p className="mt-2 text-sm text-white/55">Preencha seus dados. A ativação é automática após o pagamento via PIX.</p>
+        <p className="mt-2 text-[13px] sm:text-sm text-white/55">Preencha seus dados. A ativação é automática após o pagamento via PIX.</p>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="mt-6 sm:mt-10 grid gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+
           {/* FORM */}
           <motion.section
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
