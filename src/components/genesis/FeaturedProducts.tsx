@@ -124,32 +124,20 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
-      whileHover={{ y: -8 }}
-      className="group relative snap-start shrink-0 w-[320px] sm:w-[360px] rounded-3xl bg-[#0F0A20] transition-all duration-500"
+      whileHover={{ y: -6 }}
+      className="group relative snap-start shrink-0 w-[320px] sm:w-[360px] rounded-3xl bg-[#0F0A20] border border-white/[0.07] hover:border-white/15 transition-all duration-500 hover:shadow-[0_20px_60px_-30px_rgba(122,92,255,0.5)]"
     >
-      {/* Ambient purple glow behind card (hover) */}
+      {/* Soft ambient glow (hover) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-6 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl -z-10"
+        className="pointer-events-none absolute -inset-3 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl -z-10"
         style={{
           background:
-            "radial-gradient(60% 60% at 50% 40%, rgba(122,92,255,0.35), transparent 70%), radial-gradient(80% 80% at 50% 100%, rgba(91,61,245,0.25), transparent 70%)",
-        }}
-      />
-      {/* Gradient border ring (hover) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-3xl p-px opacity-60 group-hover:opacity-100 transition-opacity duration-500"
-        style={{
-          background:
-            "linear-gradient(140deg, rgba(167,139,250,0.35), rgba(255,255,255,0.06) 30%, rgba(91,61,245,0.35) 70%, rgba(255,255,255,0.04))",
-          WebkitMask:
-            "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
+            "radial-gradient(60% 50% at 50% 60%, rgba(122,92,255,0.18), transparent 70%)",
         }}
       />
       <div className="relative rounded-3xl overflow-hidden">
+
 
       {/* Visual header */}
       <div className="relative m-3 h-[360px] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#1A1236] via-[#120C24] to-[#0A0616]">
