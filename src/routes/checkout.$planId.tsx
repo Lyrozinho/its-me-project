@@ -311,7 +311,7 @@ function Field({
         <Icon className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
         {children}
       </div>
-      {error && <div className="mt-1.5 text-[11px] text-rose-300/90">{error}</div>}
+      {error && <div className="mt-1.5 text-[11px] text-[#F0ABFC]">{error}</div>}
     </label>
   );
 }
