@@ -108,7 +108,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -6 }}
-      className="group relative snap-start shrink-0 w-[320px] sm:w-[360px] rounded-3xl bg-[#0F0A20] border border-white/[0.07] hover:border-white/15 transition-all duration-500 hover:shadow-[0_20px_60px_-30px_rgba(122,92,255,0.5)]"
+      className="group relative snap-start shrink-0 w-[86vw] max-w-[340px] sm:w-[360px] sm:max-w-none rounded-3xl bg-[#0F0A20] border border-white/[0.07] hover:border-white/15 transition-all duration-500 hover:shadow-[0_20px_60px_-30px_rgba(122,92,255,0.5)]"
     >
       {/* Soft ambient glow (hover) */}
       <div
