@@ -5,7 +5,7 @@ import { SectionHeader } from "./SectionHeader";
 
 const FAQS = [
   {
-    q: "Afinal, o que a Extensão Genesis faz?",
+    q: "Afinal, o que a Extensão Love Hyro faz?",
     a: "Ela congela o consumo de créditos dentro do seu navegador enquanto você usa a plataforma. Você trabalha normalmente, mas os créditos param de ser descontados durante a sessão ativa.",
   },
   {
@@ -65,9 +65,10 @@ export function FAQ() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.4, delay: i * 0.03 }}
-                className="relative rounded-2xl glass overflow-hidden"
+                className={`relative rounded-xl border bg-white/[0.02] overflow-hidden transition-colors ${
+                  isOpen ? "border-white/15" : "border-white/8 hover:border-white/12"
+                }`}
               >
-                <div className="gradient-border-inner rounded-2xl pointer-events-none" />
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
                   className="relative w-full flex items-center gap-4 p-5 text-left group"

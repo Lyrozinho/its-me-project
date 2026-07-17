@@ -28,9 +28,9 @@ export function Navbar() {
         <div className="flex h-16 items-center gap-8">
           <a href="#hero" className="flex items-center gap-2 shrink-0">
             <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
-              <span className="text-white text-[13px] font-black">G</span>
+              <span className="text-white text-[13px] font-black">L</span>
             </div>
-            <span className="text-[15px] font-semibold tracking-tight">Genesis</span>
+            <span className="text-[15px] font-semibold tracking-tight">Love Hyro</span>
           </a>
 
           <nav className="hidden lg:flex items-center gap-1">

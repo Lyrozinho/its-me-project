@@ -62,7 +62,7 @@ export function Benefits() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-[#7A5CFF]/30 bg-[#7A5CFF]/10 px-3.5 py-1.5 text-xs text-[#C9BEFF]">
             <Star className="h-3.5 w-3.5" />
-            Por que a Genesis Hub
+            Por que a Love Hyro
           </div>
           <h2 className="mt-5 text-4xl sm:text-5xl font-semibold tracking-tight max-w-3xl">
             A plataforma feita para <span className="text-gradient">entregar rápido</span>

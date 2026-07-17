@@ -176,7 +176,7 @@ export function VideoTutorial() {
             {/* Top-left label */}
             <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[11px] font-bold text-white/90">
               <Rocket className="h-3.5 w-3.5 text-[#A78BFA]" />
-              Extensão Genesis • Tutorial oficial
+              Extensão Love Hyro • Tutorial oficial
             </div>
 
             {/* Controls */}
