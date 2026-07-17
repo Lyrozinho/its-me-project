@@ -145,6 +145,7 @@ export function VideoTutorial() {
             <video
               ref={videoRef}
               src={VIDEO_SRC}
+              poster={tutorialCover.url}
               muted={muted}
               playsInline
               preload="metadata"
