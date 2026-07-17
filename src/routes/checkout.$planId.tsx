@@ -126,7 +126,7 @@ function CheckoutPage() {
           {/* FORM */}
           <motion.section
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            className="rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-6 sm:p-8"
+            className="rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-4 sm:p-8"
           >
             {success ? (
               <div className="py-10 text-center">
