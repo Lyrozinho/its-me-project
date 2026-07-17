@@ -284,6 +284,8 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
           </button>
         </div>
       </div>
+      </div>
     </motion.article>
+
   );
 }
