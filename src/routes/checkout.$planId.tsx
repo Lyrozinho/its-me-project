@@ -6,6 +6,7 @@ import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 import { Footer } from "@/components/genesis/Footer";
 import { getPlanById, formatBRL } from "@/lib/plans";
+import { PixIcon } from "@/components/genesis/PixIcon";
 
 export const Route = createFileRoute("/checkout/$planId")({
   head: ({ params }) => ({
