@@ -54,7 +54,7 @@ export function Hero() {
 
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
-              className="mt-12 grid grid-cols-3 gap-8 max-w-md"
+              className="mt-10 sm:mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-md"
             >
               {[
                 { k: "+2k", v: "Pedidos entregues" },
@@ -62,11 +62,12 @@ export function Hero() {
                 { k: "24/7", v: "Suporte dedicado" },
               ].map((s) => (
                 <div key={s.v}>
-                  <div className="text-2xl font-bold tracking-tight">{s.k}</div>
-                  <div className="text-[11px] uppercase tracking-wider text-white/45 mt-1">{s.v}</div>
+                  <div className="text-xl sm:text-2xl font-bold tracking-tight">{s.k}</div>
+                  <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/45 mt-1 leading-tight">{s.v}</div>
                 </div>
               ))}
             </motion.div>
+
           </div>
 
           <DashboardMock />
