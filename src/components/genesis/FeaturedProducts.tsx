@@ -87,7 +87,7 @@ export function FeaturedProducts() {
 
           <div
             ref={scrollerRef}
-            className="flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 sm:-mx-5 px-4 sm:px-5 lg:mx-0 lg:px-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="no-scrollbar flex gap-4 sm:gap-5 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 sm:-mx-5 px-4 sm:px-5 lg:mx-0 lg:px-0"
           >
             {PLANS.map((p, i) => (
               <PlanCard key={p.duration} plan={p} index={i} />
