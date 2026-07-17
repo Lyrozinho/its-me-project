@@ -8,6 +8,7 @@ import { VideoTutorial } from "@/components/genesis/VideoTutorial";
 import { FeaturedProducts } from "@/components/genesis/FeaturedProducts";
 import { Benefits } from "@/components/genesis/Benefits";
 import { FAQ } from "@/components/genesis/FAQ";
+import { FinalCTA } from "@/components/genesis/FinalCTA";
 import { Footer } from "@/components/genesis/Footer";
 
 export const Route = createFileRoute("/")({
@@ -27,6 +28,7 @@ function Index() {
         <FeaturedProducts />
         <Benefits />
         <FAQ />
+        <FinalCTA />
       </main>
       <Footer />
     </div>
