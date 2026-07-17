@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Menu, X, User } from "lucide-react";
+import { Search, Menu, X, User, ShoppingCart } from "lucide-react";
 
 const NAV = [
-  { label: "Início", href: "#hero" },
-  { label: "Produtos", href: "#produtos" },
   { label: "Categorias", href: "#categorias" },
-  { label: "Revenda", href: "#revenda" },
-  { label: "Suporte", href: "#faq" },
+  { label: "Meus Pedidos", href: "#pedidos" },
 ];
 
 export function Navbar() {
@@ -15,7 +12,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -23,67 +20,51 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "backdrop-blur-2xl bg-[rgba(11,7,21,0.72)] border-b border-white/5"
-          : "backdrop-blur-md bg-transparent"
+      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
+        scrolled ? "bg-[rgba(11,7,21,0.85)] backdrop-blur-xl border-b border-white/5" : "bg-transparent"
       }`}
     >
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="flex h-16 items-center gap-6">
-          {/* Logo */}
-          <a href="#hero" className="flex items-center gap-2.5 shrink-0">
-            <div className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
-              <div className="absolute inset-0 rounded-lg blur-md bg-[#7A5CFF]/50 -z-10" />
-              <span className="text-white text-sm font-black">G</span>
+        <div className="flex h-16 items-center gap-8">
+          <a href="#hero" className="flex items-center gap-2 shrink-0">
+            <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
+              <span className="text-white text-[13px] font-black">G</span>
             </div>
-            <span className="text-[15px] font-semibold tracking-tight">
-              Genesis<span className="text-[#A78BFA]"> Hub</span>
-            </span>
+            <span className="text-[15px] font-semibold tracking-tight">Genesis</span>
           </a>
 
-          {/* Nav */}
           <nav className="hidden lg:flex items-center gap-1">
             {NAV.map((i) => (
-              <a
-                key={i.label}
-                href={i.href}
-                className="px-3 py-2 text-sm text-white/70 hover:text-white transition-colors rounded-full hover:bg-white/5"
-              >
+              <a key={i.label} href={i.href}
+                className="px-3 py-2 text-sm text-white/75 hover:text-white transition-colors">
                 {i.label}
               </a>
             ))}
+            <a href="#revenda"
+              className="ml-1 px-4 py-1.5 text-sm font-medium rounded-full text-white bg-[#5B3DF5] hover:bg-[#6a4cf7] transition-colors">
+              Revenda
+            </a>
           </nav>
 
-          {/* Search */}
-          <div className="hidden md:flex flex-1 max-w-md mx-auto">
-            <div className="relative w-full group">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#7A5CFF]/0 via-[#7A5CFF]/20 to-[#7A5CFF]/0 opacity-0 group-focus-within:opacity-100 blur-md transition-opacity" />
-              <div className="relative flex items-center rounded-full glass px-4 h-10">
-                <Search className="h-4 w-4 text-white/50" />
-                <input
-                  placeholder="Buscar produtos, categorias..."
-                  className="flex-1 bg-transparent border-0 outline-none text-sm px-3 placeholder:text-white/40"
-                />
-                <kbd className="hidden lg:inline text-[10px] text-white/50 px-1.5 py-0.5 rounded border border-white/10">⌘K</kbd>
-              </div>
+          <div className="hidden md:flex flex-1 max-w-sm">
+            <div className="relative flex items-center w-full rounded-full bg-white/[0.04] border border-white/10 px-4 h-10 focus-within:border-[#7A5CFF]/50 transition-colors">
+              <Search className="h-4 w-4 text-white/40" />
+              <input placeholder="Pesquisar produtos..."
+                className="flex-1 bg-transparent outline-none text-sm px-3 placeholder:text-white/40" />
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 shrink-0">
-            <button className="h-10 px-4 rounded-full text-sm text-white/80 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2">
-              <User className="h-4 w-4" /> Minha Conta
+          <div className="hidden md:flex items-center gap-2 shrink-0 ml-auto">
+            <button aria-label="Carrinho" className="h-10 w-10 grid place-items-center rounded-full text-white/75 hover:text-white hover:bg-white/5 transition-colors">
+              <ShoppingCart className="h-4.5 w-4.5" />
             </button>
-            <button className="h-10 px-5 rounded-full text-sm font-medium text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5] shadow-[0_10px_30px_-10px_rgba(91,61,245,0.7)] hover:brightness-110 transition-all">
-              Começar
+            <button className="h-10 px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2">
+              <User className="h-4 w-4" /> Entrar
             </button>
           </div>
 
-          <button
-            aria-label="Menu"
-            onClick={() => setOpen((o) => !o)}
-            className="lg:hidden ml-auto h-10 w-10 grid place-items-center rounded-full glass"
-          >
+          <button aria-label="Menu" onClick={() => setOpen((o) => !o)}
+            className="lg:hidden ml-auto h-10 w-10 grid place-items-center rounded-full bg-white/5 border border-white/10">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
@@ -91,26 +72,20 @@ export function Navbar() {
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="lg:hidden mx-4 mb-4 rounded-2xl glass-strong p-4"
-          >
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            className="lg:hidden mx-4 mb-4 rounded-2xl bg-[#131024] border border-white/10 p-4">
             <div className="flex items-center rounded-full bg-white/5 border border-white/10 px-4 h-10 mb-3">
               <Search className="h-4 w-4 text-white/50" />
-              <input placeholder="Buscar..." className="flex-1 bg-transparent border-0 outline-none text-sm px-3 placeholder:text-white/40" />
+              <input placeholder="Pesquisar..." className="flex-1 bg-transparent outline-none text-sm px-3 placeholder:text-white/40" />
             </div>
             <nav className="grid gap-1">
               {NAV.map((i) => (
                 <a key={i.label} href={i.href} onClick={() => setOpen(false)}
                   className="px-4 py-2.5 rounded-lg text-sm text-white/80 hover:bg-white/5">{i.label}</a>
               ))}
+              <a href="#revenda" onClick={() => setOpen(false)}
+                className="px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#5B3DF5]">Revenda</a>
             </nav>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <button className="h-10 rounded-full text-sm border border-white/10">Entrar</button>
-              <button className="h-10 rounded-full text-sm font-medium text-white bg-gradient-to-b from-[#7A5CFF] to-[#5B3DF5]">Começar</button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

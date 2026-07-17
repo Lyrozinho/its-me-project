@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 import { Hero } from "@/components/genesis/Hero";
+import { TrustStrip } from "@/components/genesis/TrustStrip";
+import { CommunityBanner } from "@/components/genesis/CommunityBanner";
 import { Categories } from "@/components/genesis/Categories";
 import { FeaturedProducts } from "@/components/genesis/FeaturedProducts";
 import { Benefits } from "@/components/genesis/Benefits";
@@ -22,6 +24,8 @@ function Index() {
       <Navbar />
       <main>
         <Hero />
+        <TrustStrip />
+        <CommunityBanner />
         <Categories />
         <FeaturedProducts />
         <Benefits />
