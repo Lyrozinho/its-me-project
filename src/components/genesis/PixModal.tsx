@@ -45,7 +45,15 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   const [now, setNow] = useState(Date.now());
   const [status, setStatus] = useState<Status>("pending");
   const [copied, setCopied] = useState(false);
+  const [license, setLicense] = useState<IssuedLicense | null>(() => {
+    const stored = getIssuedLicense(charge.id);
+    return stored ? { licenseKey: stored.licenseKey, password: stored.password, email: stored.email, planLabel: stored.planLabel, expiresAt: stored.expiresAt } : null;
+  });
+  const [licenseError, setLicenseError] = useState<string | null>(null);
+  const [issuing, setIssuing] = useState(false);
+  const issuedRef = useRef(false);
   const pollRef = useRef<number | null>(null);
+
 
   const remaining = Math.max(0, deadline - now);
   const totalMs = EXPIRY_MS;
