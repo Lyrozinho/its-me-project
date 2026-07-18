@@ -18,6 +18,12 @@ type Charge = {
   planId?: string;
 };
 
+type Status = "pending" | "paid" | "expired" | "error";
+
+const EXPIRY_MS = 5 * 60 * 1000;
+
+
+
 
 function normalize(s: string): Status {
   const v = s.toLowerCase();
