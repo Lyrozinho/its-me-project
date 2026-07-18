@@ -17,6 +17,27 @@ export type StoredCharge = {
 
 const KEY = "lovehyro:pix:active";
 const EVT = "lovehyro:pix:changed";
+const HISTORY_KEY = "lovehyro:pix:history";
+
+function readHistory(): StoredCharge[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(HISTORY_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberCharge(c: StoredCharge | null) {
+  if (typeof window === "undefined" || !c?.id) return;
+  try {
+    const list = readHistory();
+    const next = [c, ...list.filter((x) => x.id !== c.id)].slice(0, 20);
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+  } catch { /* ignore */ }
+}
 
 function read(): StoredCharge | null {
   if (typeof window === "undefined") return null;
@@ -33,8 +54,13 @@ function read(): StoredCharge | null {
 
 function write(v: StoredCharge | null) {
   if (typeof window === "undefined") return;
-  if (v) window.localStorage.setItem(KEY, JSON.stringify(v));
-  else window.localStorage.removeItem(KEY);
+  if (v) {
+    rememberCharge(v);
+    window.localStorage.setItem(KEY, JSON.stringify(v));
+  } else {
+    rememberCharge(read());
+    window.localStorage.removeItem(KEY);
+  }
   window.dispatchEvent(new CustomEvent(EVT));
 }
 
@@ -66,6 +92,33 @@ export function updateActiveCharge(patch: Partial<StoredCharge>) {
 
 export function clearActiveCharge() {
   write(null);
+}
+
+export function getRecentCharges(): StoredCharge[] {
+  const active = read();
+  const all = [active, ...readHistory()].filter(Boolean) as StoredCharge[];
+  const map = new Map<string, StoredCharge>();
+  for (const c of all) map.set(c.id, c);
+  return Array.from(map.values()).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export function useRecentCharges(): StoredCharge[] {
+  const [charges, setCharges] = useState<StoredCharge[]>([]);
+  useEffect(() => {
+    const refresh = () => setCharges(getRecentCharges());
+    refresh();
+    const onCustom = () => refresh();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY || e.key === HISTORY_KEY) refresh();
+    };
+    window.addEventListener(EVT, onCustom as EventListener);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(EVT, onCustom as EventListener);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+  return charges;
 }
 
 export function useActiveCharge(): StoredCharge | null {
