@@ -40,23 +40,25 @@ export function Navbar() {
             <NavPill href="#faq">FAQ</NavPill>
           </nav>
 
-          <div className="hidden sm:flex items-center gap-2 shrink-0 justify-self-end">
+          <div className="hidden sm:flex items-center gap-2 shrink-0 justify-self-end whitespace-nowrap">
             <a
               href="/minhas-compras"
               aria-label="Minhas compras"
-              className="h-10 rounded-full text-sm text-white/85 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-colors inline-flex items-center gap-2 px-3 lg:px-4"
+              title="Minhas compras"
+              className="h-10 w-10 xl:w-auto rounded-full text-sm text-white/85 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-colors inline-flex items-center justify-center gap-2 xl:px-4"
             >
               <Package className="h-4 w-4 text-[#A78BFA]" />
-              <span className="hidden lg:inline">Minhas compras</span>
+              <span className="hidden xl:inline">Minhas compras</span>
               {hasPurchases && (
                 <span className="h-5 min-w-5 px-1.5 rounded-full bg-[#5B3DF5] text-[10px] font-black grid place-items-center">{licenses.length}</span>
               )}
             </a>
             <a
               href="#login"
-              className="h-10 px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2"
+              aria-label="Login"
+              className="h-10 w-10 xl:w-auto xl:px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center justify-center gap-2"
             >
-              <User className="h-4 w-4" /> Login
+              <User className="h-4 w-4" /> <span className="hidden xl:inline">Login</span>
             </a>
             <ShimmerCTA href="#planos">Começar agora</ShimmerCTA>
           </div>
