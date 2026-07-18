@@ -326,13 +326,14 @@ function CheckoutPage() {
 
 
               <div className="pt-1 flex justify-center">
-                <div className="inline-flex items-start gap-[9px] max-w-[420px]">
-                  <ShieldCheck className="h-4 w-4 text-[#A78BFA] shrink-0 mt-[2px]" />
-                  <p className="text-left text-[13px] leading-[1.45] font-normal text-white/[0.55]">
+                <div className="inline-flex items-start gap-2 max-w-[380px]">
+                  <ShieldCheck className="h-[15px] w-[15px] text-[#A78BFA] shrink-0 mt-[3px]" />
+                  <p className="text-left text-[13px] leading-[1.55] font-medium text-white/[0.55]">
                     Seu pagamento é processado em ambiente seguro e protegido por criptografia. Após a confirmação do Pix, sua licença é liberada automaticamente.
                   </p>
                 </div>
               </div>
+
 
             </form>
           </motion.section>
