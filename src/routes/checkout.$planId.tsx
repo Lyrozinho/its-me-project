@@ -9,6 +9,8 @@ import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
 import { createPixCharge } from "@/lib/checkout.functions";
+import { getActiveCharge, saveActiveCharge, clearActiveCharge } from "@/lib/pix-store";
+
 
 export const Route = createFileRoute("/checkout/$planId")({
   head: ({ params }) => ({
