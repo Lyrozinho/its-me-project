@@ -6,7 +6,7 @@ import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 import { useIssuedLicenses, saveIssuedLicense, useRecentCharges, type StoredCharge, type StoredLicense } from "@/lib/pix-store";
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
-import { issueLicense, recoverLicensesByEmail } from "@/lib/hyro-license.functions";
+import { issueLicense, recoverLicensesByCpf } from "@/lib/hyro-license.functions";
 import { getPixStatus } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/minhas-compras")({
