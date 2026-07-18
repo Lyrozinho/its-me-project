@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, X, Loader2, CheckCircle2, AlertCircle, Minus } from "lucide-react";
+import { Copy, Check, X, Loader2, CheckCircle2, AlertCircle, Minus, Key, Lock, Mail, Calendar, Download } from "lucide-react";
 import { PixIcon } from "./PixIcon";
 import { formatBRL } from "@/lib/plans";
 import { getPixStatus } from "@/lib/checkout.functions";
-import { clearActiveCharge, updateActiveCharge } from "@/lib/pix-store";
+import { issueLicense, type IssuedLicense } from "@/lib/hyro-license.functions";
+import { clearActiveCharge, updateActiveCharge, saveIssuedLicense, getIssuedLicense } from "@/lib/pix-store";
 
 type Charge = {
   id: string;
@@ -12,11 +13,17 @@ type Charge = {
   qrCodeText: string | null;
   expiresAt: string | null;
   amount: number;
+  customerName?: string;
+  customerEmail?: string;
+  planId?: string;
 };
 
 type Status = "pending" | "paid" | "expired" | "error";
 
 const EXPIRY_MS = 5 * 60 * 1000;
+
+
+
 
 function normalize(s: string): Status {
   const v = s.toLowerCase();
@@ -38,7 +45,15 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   const [now, setNow] = useState(Date.now());
   const [status, setStatus] = useState<Status>("pending");
   const [copied, setCopied] = useState(false);
+  const [license, setLicense] = useState<IssuedLicense | null>(() => {
+    const stored = getIssuedLicense(charge.id);
+    return stored ? { licenseKey: stored.licenseKey, password: stored.password, email: stored.email, planLabel: stored.planLabel, expiresAt: stored.expiresAt } : null;
+  });
+  const [licenseError, setLicenseError] = useState<string | null>(null);
+  const [issuing, setIssuing] = useState(false);
+  const issuedRef = useRef(false);
   const pollRef = useRef<number | null>(null);
+
 
   const remaining = Math.max(0, deadline - now);
   const totalMs = EXPIRY_MS;
@@ -81,6 +96,44 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
       if (pollRef.current) window.clearInterval(pollRef.current);
     };
   }, [charge.id, status]);
+
+  // Emit license the instant status turns paid (once).
+  useEffect(() => {
+    if (status !== "paid") return;
+    if (license || issuedRef.current) return;
+    if (!charge.customerName || !charge.customerEmail || !charge.planId) {
+      setLicenseError("Dados do comprador ausentes para emitir a licença.");
+      return;
+    }
+    issuedRef.current = true;
+    setIssuing(true);
+    setLicenseError(null);
+    issueLicense({ data: {
+      planId: charge.planId,
+      paymentId: charge.id,
+      customerName: charge.customerName,
+      customerEmail: charge.customerEmail,
+    }})
+      .then((l) => {
+        setLicense(l);
+        saveIssuedLicense({
+          paymentId: charge.id,
+          licenseKey: l.licenseKey,
+          password: l.password,
+          email: l.email,
+          planLabel: l.planLabel,
+          expiresAt: l.expiresAt,
+          issuedAt: Date.now(),
+        });
+      })
+      .catch((e) => {
+        issuedRef.current = false;
+        setLicenseError(e instanceof Error ? e.message : "Falha ao emitir licença");
+      })
+      .finally(() => setIssuing(false));
+  }, [status, license, charge]);
+
+
 
   const minimize = onMinimize ?? onClose;
 
@@ -156,7 +209,8 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
             </div>
 
             {status === "paid" ? (
-              <SuccessState amount={charge.amount} onClose={closeAndDiscard} />
+              <SuccessState amount={charge.amount} license={license} issuing={issuing} error={licenseError} onClose={closeAndDiscard} />
+
             ) : status === "expired" ? (
               <ExpiredState onClose={closeAndDiscard} />
             ) : (
@@ -234,25 +288,93 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   );
 }
 
-function SuccessState({ amount, onClose }: { amount: number; onClose: () => void }) {
+function SuccessState({ amount, license, issuing, error, onClose }: { amount: number; license: IssuedLicense | null; issuing: boolean; error: string | null; onClose: () => void }) {
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const copyValue = async (key: string, val: string) => {
+    try {
+      await navigator.clipboard.writeText(val);
+      setCopiedField(key);
+      setTimeout(() => setCopiedField((k) => (k === key ? null : k)), 1500);
+    } catch { /* ignore */ }
+  };
+  const fmtDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch { return iso; }
+  };
   return (
-    <div className="mt-6 text-center py-4">
-      <div className="mx-auto h-14 w-14 rounded-full grid place-items-center bg-emerald-500/15 border border-emerald-400/30">
-        <CheckCircle2 className="h-7 w-7 text-emerald-300" />
+    <div className="mt-6">
+      <div className="text-center">
+        <div className="mx-auto h-14 w-14 rounded-full grid place-items-center bg-emerald-500/15 border border-emerald-400/30">
+          <CheckCircle2 className="h-7 w-7 text-emerald-300" />
+        </div>
+        <h3 className="mt-4 text-xl font-black">Pagamento confirmado</h3>
+        <p className="mt-1.5 text-[13px] text-white/60">Recebemos {formatBRL(amount)}. Sua licença foi emitida.</p>
       </div>
-      <h3 className="mt-4 text-xl font-black">Pagamento confirmado</h3>
-      <p className="mt-2 text-[13px] text-white/60">
-        Recebemos {formatBRL(amount)}. Sua extensão será liberada em instantes.
-      </p>
+
+      {issuing && !license && (
+        <div className="mt-6 flex items-center justify-center gap-2 text-[12.5px] text-white/60">
+          <Loader2 className="h-4 w-4 animate-spin text-[#A78BFA]" /> Gerando sua licença...
+        </div>
+      )}
+
+      {error && !license && (
+        <div className="mt-5 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200 text-center">
+          {error}
+        </div>
+      )}
+
+      {license && (
+        <div className="mt-5 space-y-2.5">
+          <CredRow icon={Key} label="Chave da licença" value={license.licenseKey} mono onCopy={copyValue} copied={copiedField === "key"} field="key" />
+          <CredRow icon={Lock} label="Senha" value={license.password} mono onCopy={copyValue} copied={copiedField === "pass"} field="pass" />
+          <CredRow icon={Mail} label="E-mail cadastrado" value={license.email} onCopy={copyValue} copied={copiedField === "email"} field="email" />
+          <CredRow icon={Calendar} label="Válida até" value={fmtDate(license.expiresAt)} onCopy={copyValue} copied={copiedField === "exp"} field="exp" />
+
+          <div className="pt-2 grid grid-cols-2 gap-2">
+            <a
+              href="https://chromewebstore.google.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="h-11 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors"
+            >
+              <Download className="h-4 w-4" /> Baixar extensão
+            </a>
+            <button
+              onClick={onClose}
+              className="h-11 rounded-xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[12.5px] font-semibold"
+            >
+              Concluir
+            </button>
+          </div>
+          <p className="pt-1 text-center text-[11px] text-white/45">Guarde essas credenciais em local seguro. Elas também foram enviadas para seu e-mail.</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CredRow({ icon: Icon, label, value, mono, onCopy, copied, field }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string; mono?: boolean; onCopy: (f: string, v: string) => void; copied: boolean; field: string }) {
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 flex items-center gap-3">
+      <span className="h-8 w-8 shrink-0 rounded-lg grid place-items-center bg-[#5B3DF5]/15 border border-[#7A5CFF]/30">
+        <Icon className="h-4 w-4 text-[#A78BFA]" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[10px] font-bold tracking-wider text-white/45 uppercase">{label}</div>
+        <div className={`truncate text-[13px] text-white ${mono ? "font-mono tracking-wide" : ""}`}>{value}</div>
+      </div>
       <button
-        onClick={onClose}
-        className="mt-6 h-11 px-5 rounded-xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[13px] font-semibold"
+        onClick={() => onCopy(field, value)}
+        className="shrink-0 h-8 w-8 grid place-items-center rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors"
+        aria-label={`Copiar ${label}`}
       >
-        Concluir
+        {copied ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
     </div>
   );
 }
+
 
 function ExpiredState({ onClose }: { onClose: () => void }) {
   return (

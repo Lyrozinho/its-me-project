@@ -85,7 +85,11 @@ function CheckoutPage() {
     qrCodeText: string | null;
     expiresAt: string | null;
     amount: number;
+    customerName?: string;
+    customerEmail?: string;
+    planId?: string;
   }>(null);
+
   const lastAttemptRef = useRef(0);
 
   // Open the modal from stored PIX on:
@@ -102,7 +106,11 @@ function CheckoutPage() {
         qrCodeText: stored.qrCodeText,
         expiresAt: new Date(stored.expiresAt).toISOString(),
         amount: stored.amount,
+        customerName: stored.customerName,
+        customerEmail: stored.customerEmail,
+        planId: stored.planId,
       });
+
     };
     openFromStore();
     const onOpen = () => openFromStore();
@@ -146,7 +154,11 @@ function CheckoutPage() {
         qrCodeText: active.qrCodeText,
         expiresAt: new Date(active.expiresAt).toISOString(),
         amount: active.amount,
+        customerName: active.customerName,
+        customerEmail: active.customerEmail,
+        planId: active.planId,
       });
+
       return;
     }
 
@@ -169,7 +181,7 @@ function CheckoutPage() {
           customerDocument: onlyDigits(form.cpf),
         },
       });
-      setCharge(c);
+      setCharge({ ...c, customerName: form.name.trim(), customerEmail: form.email.trim(), planId: plan.id });
       // Persist so mini card / refresh / accidental close keeps the Pix alive
       const remoteExpiry = c.expiresAt ? new Date(c.expiresAt).getTime() : NaN;
       const expiresAt = Number.isFinite(remoteExpiry) && remoteExpiry > Date.now()
@@ -185,7 +197,10 @@ function CheckoutPage() {
         amount: c.amount,
         createdAt: Date.now(),
         status: "pending",
+        customerName: form.name.trim(),
+        customerEmail: form.email.trim(),
       });
+
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha ao gerar Pix. Tente novamente.";
       setServerError(msg);
