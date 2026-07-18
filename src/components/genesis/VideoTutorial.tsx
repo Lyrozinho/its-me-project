@@ -153,9 +153,13 @@ export function VideoTutorial() {
               onClick={togglePlay}
             />
 
-            {/* Gradient overlay top/bottom for legibility */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 to-transparent" />
+            {/* Gradient overlay - only after playback starts, for controls legibility */}
+            {started && (
+              <>
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/50 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 to-transparent" />
+              </>
+            )}
 
             {/* Big play button (initial state) */}
             {!started && (
@@ -166,77 +170,82 @@ export function VideoTutorial() {
               >
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-[#7A5CFF]/40 blur-2xl group-hover:bg-[#7A5CFF]/60 transition-colors" />
-                  <div className="relative h-24 w-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 grid place-items-center group-hover:scale-105 transition-transform shadow-[0_20px_60px_-10px_rgba(91,61,245,0.9)]">
-                    <Play className="h-10 w-10 text-white fill-white translate-x-0.5" />
+                  <div className="relative h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 grid place-items-center group-hover:scale-105 transition-transform shadow-[0_20px_60px_-10px_rgba(91,61,245,0.9)]">
+                    <Play className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-white fill-white translate-x-0.5" />
                   </div>
                 </div>
               </button>
             )}
 
-            {/* Top-left label */}
-            <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[11px] font-bold text-white/90">
-              <Rocket className="h-3.5 w-3.5 text-[#A78BFA]" />
-              Extensão Love Hyro • Tutorial oficial
-            </div>
+            {/* Top-left label - only after playback starts, hidden on small screens */}
+            {started && (
+              <div className="hidden sm:inline-flex absolute top-4 left-4 items-center gap-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10 px-3 py-1.5 text-[11px] font-bold text-white/90">
+                <Rocket className="h-3.5 w-3.5 text-[#A78BFA]" />
+                Extensão Love Hyro • Tutorial oficial
+              </div>
+            )}
 
-            {/* Controls */}
-            <div
-              className={`absolute inset-x-0 bottom-0 px-4 pb-4 transition-opacity duration-300 ${
-                showControls || !playing ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              {/* Progress */}
+            {/* Controls - only visible after playback starts */}
+            {started && (
               <div
-                onClick={seek}
-                className="group/track relative h-1.5 w-full rounded-full bg-white/15 cursor-pointer overflow-hidden"
+                className={`absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-4 sm:pb-4 transition-opacity duration-300 ${
+                  showControls || !playing ? "opacity-100" : "opacity-0"
+                }`}
               >
+                {/* Progress */}
                 <div
-                  className="absolute inset-y-0 left-0 bg-white/25"
-                  style={{ width: `${buffered}%` }}
-                />
-                <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#7A5CFF] to-[#A78BFA] shadow-[0_0_12px_rgba(167,139,250,0.9)]"
-                  style={{ width: `${progress}%` }}
-                />
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-white opacity-0 group-hover/track:opacity-100 transition-opacity shadow-[0_0_10px_rgba(167,139,250,0.9)]"
-                  style={{ left: `${progress}%` }}
-                />
-              </div>
+                  onClick={seek}
+                  className="group/track relative h-1.5 w-full rounded-full bg-white/15 cursor-pointer overflow-hidden"
+                >
+                  <div
+                    className="absolute inset-y-0 left-0 bg-white/25"
+                    style={{ width: `${buffered}%` }}
+                  />
+                  <div
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#7A5CFF] to-[#A78BFA] shadow-[0_0_12px_rgba(167,139,250,0.9)]"
+                    style={{ width: `${progress}%` }}
+                  />
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full bg-white opacity-0 group-hover/track:opacity-100 transition-opacity shadow-[0_0_10px_rgba(167,139,250,0.9)]"
+                    style={{ left: `${progress}%` }}
+                  />
+                </div>
 
-              <div className="mt-3 flex items-center gap-3">
-                <button
-                  onClick={togglePlay}
-                  aria-label={playing ? "Pausar" : "Reproduzir"}
-                  className="h-9 w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
-                >
-                  {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 fill-white translate-x-[1px]" />}
-                </button>
-                <button
-                  onClick={toggleMute}
-                  aria-label={muted ? "Ativar som" : "Silenciar"}
-                  className="h-9 w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
-                >
-                  {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-                </button>
-                <div className="text-[12px] font-mono text-white/80 tabular-nums">
-                  {fmt(current)} <span className="text-white/40">/ {fmt(duration)}</span>
-                </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/85">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#A78BFA] animate-pulse" />
-                    HD
-                  </span>
+                <div className="mt-2.5 flex items-center gap-2 sm:gap-3">
                   <button
-                    onClick={goFullscreen}
-                    aria-label="Tela cheia"
-                    className="h-9 w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
+                    onClick={togglePlay}
+                    aria-label={playing ? "Pausar" : "Reproduzir"}
+                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
                   >
-                    <Maximize2 className="h-4 w-4" />
+                    {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 fill-white translate-x-[1px]" />}
                   </button>
+                  <button
+                    onClick={toggleMute}
+                    aria-label={muted ? "Ativar som" : "Silenciar"}
+                    className="h-8 w-8 sm:h-9 sm:w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
+                  >
+                    {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                  </button>
+                  <div className="text-[11px] sm:text-[12px] font-mono text-white/80 tabular-nums">
+                    {fmt(current)} <span className="text-white/40">/ {fmt(duration)}</span>
+                  </div>
+                  <div className="ml-auto flex items-center gap-2">
+                    <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/85">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#A78BFA] animate-pulse" />
+                      HD
+                    </span>
+                    <button
+                      onClick={goFullscreen}
+                      aria-label="Tela cheia"
+                      className="h-8 w-8 sm:h-9 sm:w-9 rounded-full grid place-items-center bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white transition-colors"
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
           </div>
 
           {/* Feature pills below */}
