@@ -325,9 +325,11 @@ function CheckoutPage() {
               )}
 
 
-              <p className="text-center text-[11px] text-white/40 inline-flex items-center gap-1.5 justify-center w-full">
-                <ShieldCheck className="h-3 w-3 text-[#A78BFA]" />
-                Seus dados são criptografados e usados apenas para emissão do pedido.
+              <p className="mx-auto max-w-md text-center text-[11.5px] leading-relaxed text-white/45 inline-flex items-start gap-1.5 justify-center w-full">
+                <ShieldCheck className="h-3.5 w-3.5 mt-0.5 text-[#A78BFA] shrink-0" />
+                <span>
+                  Seu pagamento é processado em ambiente seguro e protegido por criptografia. Após a confirmação do Pix, sua licença é liberada automaticamente.
+                </span>
               </p>
             </form>
           </motion.section>
