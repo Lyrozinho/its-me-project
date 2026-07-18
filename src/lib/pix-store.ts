@@ -41,6 +41,11 @@ function write(v: StoredCharge | null) {
 export function getActiveCharge(): StoredCharge | null {
   const c = read();
   if (!c) return null;
+  // A paid charge whose license hasn't been issued yet is still "active" for recovery.
+  if (c.status === "paid") {
+    const lic = getIssuedLicense(c.id);
+    return lic ? null : c;
+  }
   if (c.status === "pending" && c.expiresAt <= Date.now()) {
     write({ ...c, status: "expired" });
     return null;

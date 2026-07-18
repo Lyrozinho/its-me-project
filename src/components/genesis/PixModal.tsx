@@ -84,8 +84,11 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
         const s = normalize(r.status || "");
         if (s !== "pending") {
           setStatus(s);
-          if (s === "paid") updateActiveCharge({ status: "paid" });
-          clearActiveCharge();
+          if (s === "paid") {
+            updateActiveCharge({ status: "paid" });
+          } else {
+            clearActiveCharge();
+          }
         }
       } catch { /* silently retry */ }
     };
@@ -98,9 +101,7 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   }, [charge.id, status]);
 
   // Emit license the instant status turns paid (once).
-  useEffect(() => {
-    if (status !== "paid") return;
-    if (license || issuedRef.current) return;
+  const runIssue = () => {
     if (!charge.customerName || !charge.customerEmail || !charge.planId) {
       setLicenseError("Dados do comprador ausentes para emitir a licença.");
       return;
@@ -125,12 +126,20 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
           expiresAt: l.expiresAt,
           issuedAt: Date.now(),
         });
+        clearActiveCharge();
       })
       .catch((e) => {
         issuedRef.current = false;
         setLicenseError(e instanceof Error ? e.message : "Falha ao emitir licença");
       })
       .finally(() => setIssuing(false));
+  };
+
+  useEffect(() => {
+    if (status !== "paid") return;
+    if (license || issuedRef.current) return;
+    runIssue();
+     
   }, [status, license, charge]);
 
 
@@ -209,7 +218,9 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
             </div>
 
             {status === "paid" ? (
-              <SuccessState amount={charge.amount} license={license} issuing={issuing} error={licenseError} onClose={closeAndDiscard} />
+              <SuccessState amount={charge.amount} license={license} issuing={issuing} error={licenseError} onRetry={runIssue} onClose={closeAndDiscard} />
+
+
 
             ) : status === "expired" ? (
               <ExpiredState onClose={closeAndDiscard} />
@@ -288,7 +299,7 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
   );
 }
 
-function SuccessState({ amount, license, issuing, error, onClose }: { amount: number; license: IssuedLicense | null; issuing: boolean; error: string | null; onClose: () => void }) {
+function SuccessState({ amount, license, issuing, error, onRetry, onClose }: { amount: number; license: IssuedLicense | null; issuing: boolean; error: string | null; onRetry: () => void; onClose: () => void }) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const copyValue = async (key: string, val: string) => {
     try {
@@ -319,8 +330,17 @@ function SuccessState({ amount, license, issuing, error, onClose }: { amount: nu
       )}
 
       {error && !license && (
-        <div className="mt-5 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200 text-center">
-          {error}
+        <div className="mt-5 space-y-3">
+          <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200 text-center">
+            {error}
+          </div>
+          <button
+            onClick={onRetry}
+            disabled={issuing}
+            className="w-full h-11 rounded-xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
+          >
+            {issuing ? <><Loader2 className="h-4 w-4 animate-spin" /> Emitindo...</> : <>Tentar novamente</>}
+          </button>
         </div>
       )}
 
