@@ -454,4 +454,59 @@ function Row({ label, value, muted, accent }: { label: string; value: string; mu
   );
 }
 
+function Stepper({ current }: { current: 1 | 2 | 3 }) {
+  const steps = [
+    { n: 1, label: "Dados" },
+    { n: 2, label: "Pagamento" },
+    { n: 3, label: "Acesso" },
+  ] as const;
+  return (
+    <div className="mt-6 sm:mt-8 flex items-center justify-center">
+      <ol className="flex w-full max-w-2xl items-center gap-2 sm:gap-3">
+        {steps.map((s, i) => {
+          const state = current > s.n ? "done" : current === s.n ? "active" : "todo";
+          return (
+            <li key={s.n} className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
+              <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                <span
+                  className={[
+                    "relative h-8 w-8 sm:h-9 sm:w-9 rounded-full grid place-items-center text-[12px] sm:text-[13px] font-bold transition-all",
+                    state === "active"
+                      ? "bg-[#5B3DF5]/15 text-white border border-[#7A5CFF] shadow-[0_0_0_4px_rgba(122,92,255,0.15),0_0_22px_-2px_rgba(122,92,255,0.55)]"
+                      : state === "done"
+                        ? "bg-[#5B3DF5] text-white border border-[#7A5CFF]"
+                        : "bg-white/[0.03] text-white/45 border border-white/10",
+                  ].join(" ")}
+                >
+                  {state === "done" ? <CheckCircle2 className="h-4 w-4" /> : s.n}
+                </span>
+                <span
+                  className={[
+                    "text-[11px] sm:text-[13px] font-bold tracking-wider uppercase transition-colors",
+                    state === "todo" ? "text-white/40" : "text-white",
+                  ].join(" ")}
+                >
+                  {s.label}
+                </span>
+              </div>
+              {i < steps.length - 1 && (
+                <div className="relative flex-1 h-px min-w-4 sm:min-w-8">
+                  <div className="absolute inset-0 bg-white/10" />
+                  <div
+                    className={[
+                      "absolute inset-y-0 left-0 transition-all duration-500",
+                      current > s.n ? "w-full bg-gradient-to-r from-[#5B3DF5] to-[#7A5CFF]" : "w-0",
+                    ].join(" ")}
+                  />
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+
 
