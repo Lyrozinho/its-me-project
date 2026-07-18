@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Package } from "lucide-react";
-import { useIssuedLicenses } from "@/lib/pix-store";
+import { Menu, X, User } from "lucide-react";
+
 
 
 export function Navbar() {
