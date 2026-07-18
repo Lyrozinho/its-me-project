@@ -57,9 +57,11 @@ export async function createPix(input: {
   });
 
   if (r.status < 200 || r.status >= 300 || (r.json && (r.json as { success?: boolean }).success === false)) {
-    const msg = pick<string>(r.json, ["error", "message", "detail"]) || r.text || "Falha ao criar PIX";
-    throw new Error(String(msg));
+    const msg = pick<string>(r.json, ["error", "message", "detail"]) || r.text || `Falha ao criar PIX`;
+    console.error("[vexopay:create]", r.status, r.text?.slice(0, 500));
+    throw new Error(`${msg} (HTTP ${r.status})`);
   }
+
 
   const inner = (r.json && ((r.json as { data?: unknown }).data ?? (r.json as { result?: unknown }).result)) || r.json || {};
   return {
