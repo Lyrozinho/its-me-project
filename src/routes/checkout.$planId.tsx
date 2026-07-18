@@ -110,6 +110,11 @@ function CheckoutPage() {
     return () => window.removeEventListener("lovehyro:pix:open", onOpen);
   }, [plan.id]);
 
+  // Lock the form while there is a pending PIX (any plan). Unlocks the instant it expires/is cleared.
+  const storedCharge = useActiveCharge();
+  const locked = !!storedCharge;
+  const lockedThisPlan = !!storedCharge && storedCharge.planId === plan.id;
+
   const discount = useMemo(() => plan.old - plan.price, [plan]);
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
