@@ -17,9 +17,9 @@ function randStr(alphabet: string, length: number): string {
   return out;
 }
 
-/** Ex: HYRO-4K2A-9PXV-7M3Q */
+/** Ex: A7K-9F3B-XM2-QP4 */
 export function generateLicenseKey(): string {
-  return `HYRO-${randStr(ALPHA_KEY, 4)}-${randStr(ALPHA_KEY, 4)}-${randStr(ALPHA_KEY, 4)}`;
+  return `${randStr(ALPHA_KEY, 3)}-${randStr(ALPHA_KEY, 4)}-${randStr(ALPHA_KEY, 3)}-${randStr(ALPHA_KEY, 3)}`;
 }
 
 /** 10-char alphanumeric password */

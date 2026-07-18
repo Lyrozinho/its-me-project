@@ -39,9 +39,9 @@ export const issueLicense = createServerFn({ method: "POST" })
     const { getHyroDb } = await import("./hyro-db.server");
     const db = getHyroDb();
 
-    // Client-side idempotency guards duplicates in practice; here we still try
-    // to avoid double-issuing when payment_id already exists (best effort).
-    // We can't SELECT (RLS gives anon only INSERT), so we just proceed.
+    // The external Hyro table uses `id` itself as the license key.
+    // Keep the insert aligned with the production schema to avoid PostgREST
+    // schema-cache errors for non-existent columns such as `license_key`.
 
     const licenseKey = generateLicenseKey();
     const password = generateLicensePassword();
@@ -49,15 +49,14 @@ export const issueLicense = createServerFn({ method: "POST" })
     const planLabel = `${plan.duration} - ${plan.hours}`;
 
     const row = {
-      license_key: licenseKey,
+      id: licenseKey,
+      email: data.customerEmail.trim().toLowerCase(),
       password,
       status: "ativa" as const,
-      plan_label: planLabel,
-      customer_name: data.customerName.trim(),
-      customer_email: data.customerEmail.trim().toLowerCase(),
-      payment_id: data.paymentId,
-      created_source: "site-vendas",
+      created_at: new Date().toISOString(),
       expires_at: expiresAt.toISOString(),
+      created_source: "site-vendas",
+      plan_label: planLabel,
     };
 
     const { error } = await db.from("hyro_extension_licenses").insert(row);
@@ -69,7 +68,7 @@ export const issueLicense = createServerFn({ method: "POST" })
     return {
       licenseKey,
       password,
-      email: row.customer_email,
+      email: row.email,
       planLabel,
       expiresAt: expiresAt.toISOString(),
     };
