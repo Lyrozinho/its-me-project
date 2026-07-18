@@ -9,7 +9,7 @@ import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
 import { createPixCharge } from "@/lib/checkout.functions";
-import { getActiveCharge, saveActiveCharge, clearActiveCharge } from "@/lib/pix-store";
+import { getActiveCharge, saveActiveCharge, clearActiveCharge, useActiveCharge } from "@/lib/pix-store";
 
 
 export const Route = createFileRoute("/checkout/$planId")({
@@ -88,19 +88,23 @@ function CheckoutPage() {
   }>(null);
   const lastAttemptRef = useRef(0);
 
-  // Resume an in-progress PIX for this plan (mini card → checkout, or accidental close)
+  // Resume an in-progress PIX for this plan (mini card → checkout, or accidental close).
+  // Subscribes to the store so clicking the mini card while already on this route reopens the modal.
+  const storedCharge = useActiveCharge();
   useEffect(() => {
-    const stored = getActiveCharge();
-    if (stored && stored.planId === plan.id) {
-      setCharge({
-        id: stored.id,
-        qrCodeBase64: stored.qrCodeBase64,
-        qrCodeText: stored.qrCodeText,
-        expiresAt: new Date(stored.expiresAt).toISOString(),
-        amount: stored.amount,
+    if (storedCharge && storedCharge.planId === plan.id) {
+      setCharge((cur) => {
+        if (cur && cur.id === storedCharge.id) return cur;
+        return {
+          id: storedCharge.id,
+          qrCodeBase64: storedCharge.qrCodeBase64,
+          qrCodeText: storedCharge.qrCodeText,
+          expiresAt: new Date(storedCharge.expiresAt).toISOString(),
+          amount: storedCharge.amount,
+        };
       });
     }
-  }, [plan.id]);
+  }, [storedCharge, plan.id]);
 
   const discount = useMemo(() => plan.old - plan.price, [plan]);
 
