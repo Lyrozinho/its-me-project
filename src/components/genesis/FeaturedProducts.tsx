@@ -108,17 +108,8 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -6 }}
-      className="group relative snap-start shrink-0 w-[86vw] max-w-[340px] sm:w-[360px] sm:max-w-none rounded-3xl bg-[#0F0A20] border border-white/[0.07] hover:border-white/15 transition-all duration-500 hover:shadow-[0_20px_60px_-30px_rgba(122,92,255,0.5)]"
+      className="group relative isolate snap-start shrink-0 w-[86vw] max-w-[340px] sm:w-[360px] sm:max-w-none rounded-3xl bg-[#0F0A20] border border-white/[0.07] shadow-[0_14px_34px_-28px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow,transform] duration-500 hover:border-white/14 hover:shadow-[0_16px_34px_-30px_rgba(122,92,255,0.32)]"
     >
-      {/* Soft ambient glow (hover) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -inset-3 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl -z-10"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 60%, rgba(122,92,255,0.18), transparent 70%)",
-        }}
-      />
       <div className="relative rounded-3xl overflow-hidden">
 
 
@@ -129,7 +120,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
             <motion.img
               src={plan.image}
               alt={plan.title}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover will-change-transform"
               initial={{ scale: 1 }}
               whileHover={{ scale: 1.04 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
