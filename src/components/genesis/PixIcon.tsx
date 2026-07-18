@@ -1,4 +1,5 @@
 import pixAsset from "@/assets/pix-icon.png.asset.json";
+import { assetUrl } from "@/lib/asset";
 
 export function PixIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
