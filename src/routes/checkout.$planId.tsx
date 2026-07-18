@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
-import { Footer } from "@/components/genesis/Footer";
+
 import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
