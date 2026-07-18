@@ -387,7 +387,7 @@ function CheckoutPage() {
           </motion.aside>
         </div>
       </main>
-      <Footer />
+
 
       {charge && (
         <PixModal
