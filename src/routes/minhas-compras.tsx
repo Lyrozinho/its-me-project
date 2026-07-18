@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Key, Lock, Mail, Calendar, Copy, Check, Download, ShieldCheck, Search, Package, Fingerprint, Loader2, MailSearch } from "lucide-react";
+import { ArrowLeft, Key, Lock, Mail, Calendar, Copy, Check, Download, ShieldCheck, Search, Package, Fingerprint, Loader2, MailSearch, RefreshCw } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
-import { useIssuedLicenses, saveIssuedLicense, type StoredLicense } from "@/lib/pix-store";
+import { useIssuedLicenses, saveIssuedLicense, useRecentCharges, type StoredCharge, type StoredLicense } from "@/lib/pix-store";
 import { getDeviceInfo, getPublicIp } from "@/lib/device";
-import { recoverLicensesByEmail } from "@/lib/hyro-license.functions";
+import { issueLicense, recoverLicensesByEmail } from "@/lib/hyro-license.functions";
 
 export const Route = createFileRoute("/minhas-compras")({
   head: () => ({
@@ -89,6 +89,7 @@ function PurchasesPage() {
           </a>
         </div>
 
+        <AutoRecovery />
         <RecoveryBox />
 
         {filtered.length === 0 ? (
@@ -110,6 +111,86 @@ function PurchasesPage() {
           </div>
         )}
       </main>
+    </div>
+  );
+}
+
+function AutoRecovery() {
+  const charges = useRecentCharges();
+  const licenses = useIssuedLicenses();
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+
+  const issuedPaymentIds = new Set(licenses.map((l) => l.paymentId));
+  const recoverable = charges.filter((c) => c.status === "paid" && !issuedPaymentIds.has(c.id));
+
+  const emit = async (charge: StoredCharge) => {
+    if (!charge.customerName || !charge.customerEmail || !charge.planId) {
+      setMsg({ kind: "err", text: "Não encontrei todos os dados desta compra. Use a recuperação por e-mail abaixo." });
+      return;
+    }
+    setBusyId(charge.id);
+    setMsg(null);
+    try {
+      const l = await issueLicense({ data: {
+        planId: charge.planId,
+        paymentId: charge.id,
+        customerName: charge.customerName,
+        customerEmail: charge.customerEmail,
+      }});
+      const dev = getDeviceInfo();
+      const ip = await getPublicIp();
+      saveIssuedLicense({
+        paymentId: charge.id,
+        licenseKey: l.licenseKey,
+        password: l.password,
+        email: l.email,
+        planLabel: l.planLabel,
+        expiresAt: l.expiresAt,
+        issuedAt: Date.now(),
+        deviceId: dev.id,
+        fingerprint: dev.fingerprint,
+        ip,
+      });
+      setMsg({ kind: "ok", text: "Compra recuperada. Sua chave já apareceu abaixo." });
+    } catch (err) {
+      setMsg({ kind: "err", text: err instanceof Error ? err.message : "Não foi possível recuperar automaticamente." });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  useEffect(() => {
+    if (recoverable.length === 1 && !busyId && !msg) emit(recoverable[0]);
+  }, [recoverable.length]);
+
+  if (recoverable.length === 0 && !msg) return null;
+
+  return (
+    <div className="mb-5 rounded-2xl border border-[#7A5CFF]/25 bg-[#5B3DF5]/[0.07] p-4 sm:p-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <div className="text-[13px] font-bold text-white">Compra paga encontrada</div>
+          <p className="mt-1 text-[12.5px] text-white/55 leading-relaxed">
+            Detectei um pagamento confirmado neste navegador. Clique para liberar sua chave agora.
+          </p>
+        </div>
+        {recoverable[0] && (
+          <button
+            type="button"
+            onClick={() => emit(recoverable[0])}
+            disabled={!!busyId}
+            className="h-10 px-4 rounded-xl bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 text-white text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
+          >
+            {busyId ? <><Loader2 className="h-4 w-4 animate-spin" /> Recuperando</> : <><RefreshCw className="h-4 w-4" /> Liberar chave</>}
+          </button>
+        )}
+      </div>
+      {msg && (
+        <div className={`mt-3 text-[12px] rounded-lg px-3 py-2 border ${msg.kind === "ok" ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-200" : "border-red-400/30 bg-red-500/10 text-red-200"}`}>
+          {msg.text}
+        </div>
+      )}
     </div>
   );
 }
