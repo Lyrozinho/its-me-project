@@ -198,11 +198,10 @@ function CheckoutPage() {
   return (
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
       <Background />
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-16 sm:pt-20 pb-16 lg:pt-20">
+      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-4 sm:pt-6 pb-12 lg:pt-7">
         <Stepper current={charge ? 2 : 1} />
 
-        <div className="mt-6 sm:mt-8 grid gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="mt-5 sm:mt-6 grid gap-5 lg:gap-7 lg:grid-cols-[minmax(0,1fr)_420px]">
 
 
 
@@ -445,7 +444,7 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
     { n: 3, label: "Chaves" },
   ] as const;
   return (
-    <div className="mt-6 sm:mt-8 flex items-center justify-center">
+    <div className="flex items-center justify-center">
       <ol className="flex w-full max-w-2xl items-center gap-2 sm:gap-3">
         {steps.map((s, i) => {
           const state = current > s.n ? "done" : current === s.n ? "active" : "todo";
