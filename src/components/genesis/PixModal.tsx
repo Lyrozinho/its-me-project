@@ -147,21 +147,24 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
                 </div>
 
                 {/* QR */}
-                <div className="mt-5 rounded-2xl border border-white/10 bg-white overflow-hidden grid place-items-center">
-                  {charge.qrCodeBase64 ? (
-                    <img
-                      src={charge.qrCodeBase64.startsWith("data:") ? charge.qrCodeBase64 : `data:image/png;base64,${charge.qrCodeBase64}`}
-                      alt="QR Code PIX"
-                      width={240}
-                      height={240}
-                      className="h-[240px] w-[240px] object-cover scale-[1.14]"
-                    />
-                  ) : (
-                    <div className="h-[240px] w-[240px] grid place-items-center text-black/60 text-xs">
-                      QR indisponível
-                    </div>
-                  )}
+                <div className="mt-5 flex justify-center">
+                  <div className="rounded-2xl bg-white p-4 shadow-[0_10px_40px_-15px_rgba(122,92,255,0.35)] ring-1 ring-white/10">
+                    {charge.qrCodeBase64 ? (
+                      <img
+                        src={charge.qrCodeBase64.startsWith("data:") ? charge.qrCodeBase64 : `data:image/png;base64,${charge.qrCodeBase64}`}
+                        alt="QR Code PIX"
+                        width={200}
+                        height={200}
+                        className="h-[200px] w-[200px] block object-contain"
+                      />
+                    ) : (
+                      <div className="h-[200px] w-[200px] grid place-items-center text-black/60 text-xs">
+                        QR indisponível
+                      </div>
+                    )}
+                  </div>
                 </div>
+
 
 
                 <p className="mt-4 text-[12.5px] text-white/60 text-center leading-relaxed">
