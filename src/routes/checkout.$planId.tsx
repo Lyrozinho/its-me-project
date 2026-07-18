@@ -154,7 +154,11 @@ function CheckoutPage() {
         qrCodeText: active.qrCodeText,
         expiresAt: new Date(active.expiresAt).toISOString(),
         amount: active.amount,
+        customerName: active.customerName,
+        customerEmail: active.customerEmail,
+        planId: active.planId,
       });
+
       return;
     }
 
