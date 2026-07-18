@@ -81,3 +81,33 @@ export function useActiveCharge(): StoredCharge | null {
 
   return charge;
 }
+
+// ---------- License persistence (survives clearActiveCharge) ----------
+export type StoredLicense = {
+  paymentId: string;
+  licenseKey: string;
+  password: string;
+  email: string;
+  planLabel: string;
+  expiresAt: string; // ISO
+  issuedAt: number;
+};
+
+const LICENSE_KEY = "lovehyro:license:latest";
+
+export function saveIssuedLicense(l: StoredLicense) {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(LICENSE_KEY, JSON.stringify(l)); } catch { /* ignore */ }
+}
+
+export function getIssuedLicense(paymentId?: string): StoredLicense | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(LICENSE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredLicense;
+    if (paymentId && parsed.paymentId !== paymentId) return null;
+    return parsed;
+  } catch { return null; }
+}
+
