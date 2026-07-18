@@ -359,7 +359,14 @@ function CheckoutPage() {
       </main>
       <Footer />
 
-      {charge && <PixModal charge={charge} onClose={() => setCharge(null)} />}
+      {charge && (
+        <PixModal
+          charge={charge}
+          onMinimize={() => setCharge(null)}
+          onClose={() => { clearActiveCharge(); setCharge(null); }}
+        />
+      )}
+
 
       <style>{`
         .input {
