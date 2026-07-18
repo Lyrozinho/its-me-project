@@ -97,6 +97,16 @@ export function Navbar() {
               <ShimmerCTA href="#planos" onClick={() => setOpen(false)} block>
                 Começar agora
               </ShimmerCTA>
+              {hasPurchases && (
+                <a
+                  href="/minhas-compras"
+                  onClick={() => setOpen(false)}
+                  className="h-11 rounded-full text-sm font-medium text-white/90 hover:text-white bg-white/[0.04] border border-white/10 inline-flex items-center justify-center gap-2"
+                >
+                  <Package className="h-4 w-4 text-[#A78BFA]" /> Minhas compras
+                  <span className="h-5 min-w-5 px-1.5 rounded-full bg-[#5B3DF5] text-[10px] font-black grid place-items-center">{licenses.length}</span>
+                </a>
+              )}
               <a
                 href="#login"
                 onClick={() => setOpen(false)}
@@ -104,6 +114,7 @@ export function Navbar() {
               >
                 <User className="h-4 w-4" /> Login
               </a>
+
             </div>
           </motion.div>
         )}
