@@ -85,7 +85,11 @@ function CheckoutPage() {
     qrCodeText: string | null;
     expiresAt: string | null;
     amount: number;
+    customerName?: string;
+    customerEmail?: string;
+    planId?: string;
   }>(null);
+
   const lastAttemptRef = useRef(0);
 
   // Open the modal from stored PIX on:
