@@ -17,6 +17,8 @@ type Charge = {
   amount: number;
   customerName?: string;
   customerEmail?: string;
+  customerPhone?: string;
+  customerCpf?: string;
   planId?: string;
 };
 
