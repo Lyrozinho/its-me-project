@@ -205,21 +205,14 @@ function CheckoutPage() {
             <ArrowLeft className="h-4 w-4" /> Voltar
           </Link>
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/10 px-3 py-1.5 text-[11px] font-medium text-white/70">
-            <Lock className="h-3 w-3 text-[#A78BFA]" /> Ambiente seguro
+            <Lock className="h-3 w-3 text-[#A78BFA]" /> Finalizar compra 100% seguro
           </div>
         </div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-          className="mt-4 text-[26px] sm:text-4xl font-bold tracking-tight leading-tight"
-        >
-          Finalize sua <span className="text-gradient">compra</span>
-        </motion.h1>
-        <p className="mt-2 text-[13px] sm:text-sm text-white/55">Preencha seus dados. A ativação é automática após o pagamento via PIX.</p>
-
         <Stepper current={charge ? 2 : 1} />
 
-        <div className="mt-6 sm:mt-10 grid gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="mt-6 sm:mt-8 grid gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+
 
 
           {/* FORM */}
@@ -458,7 +451,7 @@ function Stepper({ current }: { current: 1 | 2 | 3 }) {
   const steps = [
     { n: 1, label: "Dados" },
     { n: 2, label: "Pagamento" },
-    { n: 3, label: "Acesso" },
+    { n: 3, label: "Chaves" },
   ] as const;
   return (
     <div className="mt-6 sm:mt-8 flex items-center justify-center">
