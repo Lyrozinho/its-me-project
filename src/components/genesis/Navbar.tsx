@@ -82,6 +82,17 @@ export function Navbar() {
   );
 }
 
+function NavPill({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      className="px-4 h-9 inline-flex items-center rounded-full text-[13px] font-medium text-white/75 hover:text-white hover:bg-white/[0.06] transition-colors"
+    >
+      {children}
+    </a>
+  );
+}
+
 function ShimmerCTA({
   href,
   children,
