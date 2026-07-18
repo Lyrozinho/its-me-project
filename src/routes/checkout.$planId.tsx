@@ -87,6 +87,8 @@ function CheckoutPage() {
     amount: number;
     customerName?: string;
     customerEmail?: string;
+    customerPhone?: string;
+    customerCpf?: string;
     planId?: string;
   }>(null);
 
