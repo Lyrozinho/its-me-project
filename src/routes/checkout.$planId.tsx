@@ -9,7 +9,7 @@ import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
 import { createPixCharge } from "@/lib/checkout.functions";
-import { getActiveCharge, saveActiveCharge, clearActiveCharge } from "@/lib/pix-store";
+import { getActiveCharge, saveActiveCharge, clearActiveCharge, useActiveCharge } from "@/lib/pix-store";
 
 
 export const Route = createFileRoute("/checkout/$planId")({
@@ -109,6 +109,11 @@ function CheckoutPage() {
     window.addEventListener("lovehyro:pix:open", onOpen);
     return () => window.removeEventListener("lovehyro:pix:open", onOpen);
   }, [plan.id]);
+
+  // Lock the form while there is a pending PIX (any plan). Unlocks the instant it expires/is cleared.
+  const storedCharge = useActiveCharge();
+  const locked = !!storedCharge;
+  const lockedThisPlan = !!storedCharge && storedCharge.planId === plan.id;
 
   const discount = useMemo(() => plan.old - plan.price, [plan]);
 
@@ -228,6 +233,7 @@ function CheckoutPage() {
               <Field label="Nome completo" icon={User} error={errors.name}>
                 <input
                   required
+                  disabled={locked}
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
                   placeholder="Como está no documento"
@@ -240,6 +246,7 @@ function CheckoutPage() {
                 <Field label="E-mail" icon={Mail} error={errors.email}>
                   <input
                     required
+                    disabled={locked}
                     type="email"
                     value={form.email}
                     onChange={(e) => set("email", e.target.value)}
@@ -251,6 +258,7 @@ function CheckoutPage() {
                 <Field label="Telefone" icon={Phone} error={errors.phone}>
                   <input
                     required
+                    disabled={locked}
                     inputMode="tel"
                     value={form.phone}
                     onChange={(e) => set("phone", maskPhone(e.target.value))}
@@ -264,6 +272,7 @@ function CheckoutPage() {
               <Field label="CPF" icon={IdCard} error={errors.cpf}>
                 <input
                   required
+                  disabled={locked}
                   inputMode="numeric"
                   value={form.cpf}
                   onChange={(e) => set("cpf", maskCPF(e.target.value))}
@@ -299,8 +308,20 @@ function CheckoutPage() {
                 className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
               >
                 <PixIcon className="h-4 w-4" />
-                {submitting ? "Gerando Pix..." : `Pagar ${formatBRL(plan.price)} com Pix`}
+                {submitting
+                  ? "Gerando Pix..."
+                  : lockedThisPlan
+                    ? "Abrir Pix em aberto"
+                    : locked
+                      ? "Pix ativo em outro plano"
+                      : `Pagar ${formatBRL(plan.price)} com Pix`}
               </button>
+
+              {locked && (
+                <p className="text-center text-[11px] text-white/50">
+                  Campos bloqueados enquanto houver um Pix em aberto. Liberam automaticamente ao expirar.
+                </p>
+              )}
 
 
               <p className="text-center text-[11px] text-white/40 inline-flex items-center gap-1.5 justify-center w-full">
@@ -395,6 +416,11 @@ function CheckoutPage() {
           border-color: rgba(122,92,255,0.55);
           background: rgba(255,255,255,0.05);
           box-shadow: 0 0 0 4px rgba(122,92,255,0.12);
+        }
+        .input:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+          background: rgba(255,255,255,0.02);
         }
       `}</style>
     </div>
