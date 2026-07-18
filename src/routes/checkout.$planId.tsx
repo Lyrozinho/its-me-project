@@ -199,16 +199,7 @@ function CheckoutPage() {
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
       <Background />
       <Navbar />
-      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-20 sm:pt-24 pb-16 lg:pt-28">
-        <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Voltar
-          </Link>
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/10 px-3 py-1.5 text-[11px] font-medium text-white/70">
-            <Lock className="h-3 w-3 text-[#A78BFA]" /> Finalizar compra 100% seguro
-          </div>
-        </div>
-
+      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-16 sm:pt-20 pb-16 lg:pt-20">
         <Stepper current={charge ? 2 : 1} />
 
         <div className="mt-6 sm:mt-8 grid gap-6 lg:gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">

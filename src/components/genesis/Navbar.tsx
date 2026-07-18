@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Menu, X, User, ShoppingCart } from "lucide-react";
-
-const NAV = [
-  { label: "Categorias", href: "#categorias" },
-  { label: "Meus Pedidos", href: "#pedidos" },
-];
+import { Menu, X, User } from "lucide-react";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -25,46 +20,29 @@ export function Navbar() {
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
-        <div className="flex h-16 items-center gap-8">
-          <a href="#hero" className="flex items-center gap-2 shrink-0">
+        <div className="flex h-16 items-center gap-4">
+          <a href="/" className="flex items-center gap-2 shrink-0">
             <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
               <span className="text-white text-[13px] font-black">L</span>
             </div>
             <span className="text-[15px] font-semibold tracking-tight">Love Hyro</span>
           </a>
 
-          <nav className="hidden lg:flex items-center gap-1">
-            {NAV.map((i) => (
-              <a key={i.label} href={i.href}
-                className="px-3 py-2 text-sm text-white/75 hover:text-white transition-colors">
-                {i.label}
-              </a>
-            ))}
-            <a href="#revenda"
-              className="ml-1 px-4 py-1.5 text-sm font-medium rounded-full text-white bg-[#5B3DF5] hover:bg-[#6a4cf7] transition-colors">
-              Revenda
+          <div className="hidden sm:flex items-center gap-2 shrink-0 ml-auto">
+            <ShimmerCTA href="#planos">Começar agora</ShimmerCTA>
+            <a
+              href="#login"
+              className="h-10 px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2"
+            >
+              <User className="h-4 w-4" /> Login
             </a>
-          </nav>
-
-          <div className="hidden md:flex flex-1 max-w-sm">
-            <div className="relative flex items-center w-full rounded-full bg-white/[0.04] border border-white/10 px-4 h-10 focus-within:border-[#7A5CFF]/50 transition-colors">
-              <Search className="h-4 w-4 text-white/40" />
-              <input placeholder="Pesquisar produtos..."
-                className="flex-1 bg-transparent outline-none text-sm px-3 placeholder:text-white/40" />
-            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 shrink-0 ml-auto">
-            <button aria-label="Carrinho" className="h-10 w-10 grid place-items-center rounded-full text-white/75 hover:text-white hover:bg-white/5 transition-colors">
-              <ShoppingCart className="h-4.5 w-4.5" />
-            </button>
-            <button className="h-10 px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center gap-2">
-              <User className="h-4 w-4" /> Entrar
-            </button>
-          </div>
-
-          <button aria-label="Menu" onClick={() => setOpen((o) => !o)}
-            className="lg:hidden ml-auto h-10 w-10 grid place-items-center rounded-full bg-white/5 border border-white/10">
+          <button
+            aria-label="Menu"
+            onClick={() => setOpen((o) => !o)}
+            className="sm:hidden ml-auto h-10 w-10 grid place-items-center rounded-full bg-white/5 border border-white/10"
+          >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
@@ -72,23 +50,55 @@ export function Navbar() {
 
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-            className="lg:hidden mx-4 mb-4 rounded-2xl bg-[#131024] border border-white/10 p-4">
-            <div className="flex items-center rounded-full bg-white/5 border border-white/10 px-4 h-10 mb-3">
-              <Search className="h-4 w-4 text-white/50" />
-              <input placeholder="Pesquisar..." className="flex-1 bg-transparent outline-none text-sm px-3 placeholder:text-white/40" />
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="sm:hidden mx-4 mb-4 rounded-2xl bg-[#131024] border border-white/10 p-4"
+          >
+            <div className="grid gap-2">
+              <ShimmerCTA href="#planos" onClick={() => setOpen(false)} block>
+                Começar agora
+              </ShimmerCTA>
+              <a
+                href="#login"
+                onClick={() => setOpen(false)}
+                className="h-11 rounded-full text-sm font-medium text-white/90 hover:text-white bg-white/5 border border-white/10 inline-flex items-center justify-center gap-2"
+              >
+                <User className="h-4 w-4" /> Login
+              </a>
             </div>
-            <nav className="grid gap-1">
-              {NAV.map((i) => (
-                <a key={i.label} href={i.href} onClick={() => setOpen(false)}
-                  className="px-4 py-2.5 rounded-lg text-sm text-white/80 hover:bg-white/5">{i.label}</a>
-              ))}
-              <a href="#revenda" onClick={() => setOpen(false)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-white bg-[#5B3DF5]">Revenda</a>
-            </nav>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function ShimmerCTA({
+  href,
+  children,
+  onClick,
+  block,
+}: {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  block?: boolean;
+}) {
+  return (
+    <a
+      href={href}
+      onClick={onClick}
+      className={`group relative inline-flex ${block ? "w-full h-11" : "h-10"} items-center justify-center overflow-hidden rounded-full px-5 text-sm font-semibold text-white bg-[#5B3DF5] hover:bg-[#6a4cf7] transition-colors shadow-[0_8px_24px_-12px_rgba(122,92,255,0.7)]`}
+    >
+      <span className="relative z-10">{children}</span>
+      {/* Sheen animado passando sozinho */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_2.8s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/35 to-transparent"
+        style={{ mixBlendMode: "overlay" }}
+      />
+    </a>
   );
 }
