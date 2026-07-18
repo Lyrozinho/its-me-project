@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import heroVisual from "@/assets/hero-visual.png.asset.json";
+import { assetUrl } from "@/lib/asset";
 
 export function DashboardMock() {
   return (
@@ -61,7 +62,7 @@ export function DashboardMock() {
       >
         <div className="relative rounded-[1.4rem] overflow-hidden aspect-square bg-[#0d0819]">
           <motion.img
-            src={heroVisual.url}
+            src={assetUrl(heroVisual)}
             alt="Love Hyro"
             width={1024}
             height={1024}
