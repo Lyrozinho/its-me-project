@@ -7,6 +7,9 @@ import { useIssuedLicenses } from "@/lib/pix-store";
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const licenses = useIssuedLicenses();
+  const hasPurchases = licenses.length > 0;
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
