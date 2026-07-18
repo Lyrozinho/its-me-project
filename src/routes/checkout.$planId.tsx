@@ -88,23 +88,27 @@ function CheckoutPage() {
   }>(null);
   const lastAttemptRef = useRef(0);
 
-  // Resume an in-progress PIX for this plan (mini card → checkout, or accidental close).
-  // Subscribes to the store so clicking the mini card while already on this route reopens the modal.
-  const storedCharge = useActiveCharge();
+  // Open the modal from stored PIX on:
+  //  1) initial mount (recover after refresh/navigation back)
+  //  2) explicit "open request" event fired by the floating mini card
+  // We do NOT auto-reopen on every store tick — otherwise minimizing would bounce back.
   useEffect(() => {
-    if (storedCharge && storedCharge.planId === plan.id) {
-      setCharge((cur) => {
-        if (cur && cur.id === storedCharge.id) return cur;
-        return {
-          id: storedCharge.id,
-          qrCodeBase64: storedCharge.qrCodeBase64,
-          qrCodeText: storedCharge.qrCodeText,
-          expiresAt: new Date(storedCharge.expiresAt).toISOString(),
-          amount: storedCharge.amount,
-        };
+    const openFromStore = () => {
+      const stored = getActiveCharge();
+      if (!stored || stored.planId !== plan.id) return;
+      setCharge({
+        id: stored.id,
+        qrCodeBase64: stored.qrCodeBase64,
+        qrCodeText: stored.qrCodeText,
+        expiresAt: new Date(stored.expiresAt).toISOString(),
+        amount: stored.amount,
       });
-    }
-  }, [storedCharge, plan.id]);
+    };
+    openFromStore();
+    const onOpen = () => openFromStore();
+    window.addEventListener("lovehyro:pix:open", onOpen);
+    return () => window.removeEventListener("lovehyro:pix:open", onOpen);
+  }, [plan.id]);
 
   const discount = useMemo(() => plan.old - plan.price, [plan]);
 
