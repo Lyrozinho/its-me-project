@@ -38,19 +38,38 @@ export const issueLicense = createServerFn({ method: "POST" })
 
     const { getHyroDb } = await import("./hyro-db.server");
     const db = getHyroDb();
+    const email = data.customerEmail.trim().toLowerCase();
+    const planLabel = `${plan.duration} - ${plan.hours}`;
 
-    // The external Hyro table uses `id` itself as the license key.
-    // Keep the insert aligned with the production schema to avoid PostgREST
-    // schema-cache errors for non-existent columns such as `license_key`.
+    // If a license was already issued for this payment (previous attempt succeeded
+    // server-side but the client lost the response), reuse it instead of duplicating.
+    const { data: existing } = await db
+      .from("hyro_extension_licenses")
+      .select("id,email,password,expires_at,plan_label")
+      .eq("email", email)
+      .eq("created_source", "site-vendas")
+      .eq("plan_label", planLabel)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing && existing.id) {
+      return {
+        licenseKey: String(existing.id),
+        password: String(existing.password ?? ""),
+        email: String(existing.email ?? email),
+        planLabel: String(existing.plan_label ?? planLabel),
+        expiresAt: new Date(existing.expires_at).toISOString(),
+      };
+    }
 
     const licenseKey = generateLicenseKey();
     const password = generateLicensePassword();
     const expiresAt = computeExpiresAt(plan.hours);
-    const planLabel = `${plan.duration} - ${plan.hours}`;
 
     const row = {
       id: licenseKey,
-      email: data.customerEmail.trim().toLowerCase(),
+      email,
       password,
       status: "ativa" as const,
       created_at: new Date().toISOString(),
@@ -60,16 +79,51 @@ export const issueLicense = createServerFn({ method: "POST" })
     };
 
     const { error } = await db.from("hyro_extension_licenses").insert(row);
-    if (error) {
-      // Surface a clean error but do not leak provider details.
-      throw new Error(`Não foi possível emitir a licença: ${error.message}`);
-    }
+    if (error) throw new Error(`Não foi possível emitir a licença: ${error.message}`);
 
     return {
       licenseKey,
       password,
-      email: row.email,
+      email,
       planLabel,
       expiresAt: expiresAt.toISOString(),
     };
+  });
+
+export type RecoveredLicense = {
+  licenseKey: string;
+  password: string;
+  email: string;
+  planLabel: string;
+  expiresAt: string;
+  createdAt: string;
+};
+
+// Recover licenses by e-mail. Used when a buyer lost localStorage (closed browser,
+// switched device, etc.) but paid successfully. Only returns licenses created
+// through this sales site (created_source='site-vendas').
+export const recoverLicensesByEmail = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string }) => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data?.email || "")) throw new Error("E-mail inválido");
+    return { email: data.email.trim().toLowerCase() };
+  })
+  .handler(async ({ data }): Promise<RecoveredLicense[]> => {
+    const { getHyroDb } = await import("./hyro-db.server");
+    const db = getHyroDb();
+    const { data: rows, error } = await db
+      .from("hyro_extension_licenses")
+      .select("id,email,password,expires_at,plan_label,created_at")
+      .eq("email", data.email)
+      .eq("created_source", "site-vendas")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(`Falha ao consultar: ${error.message}`);
+    return (rows ?? []).map((r) => ({
+      licenseKey: String(r.id),
+      password: String(r.password ?? ""),
+      email: String(r.email ?? data.email),
+      planLabel: String(r.plan_label ?? ""),
+      expiresAt: new Date(r.expires_at).toISOString(),
+      createdAt: new Date(r.created_at).toISOString(),
+    }));
   });
