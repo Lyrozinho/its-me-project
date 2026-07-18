@@ -198,7 +198,22 @@ function CheckoutPage() {
   return (
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
       <Background />
-      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-4 sm:pt-6 pb-12 lg:pt-7">
+      <main className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8 pt-6 sm:pt-8 pb-24 lg:pt-10">
+        <div className="mb-6 sm:mb-8 flex items-center justify-between gap-3">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 h-10 pl-2 pr-4 rounded-full border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/15 transition-colors text-[13px] text-white/85"
+          >
+            <span className="h-7 w-7 rounded-full grid place-items-center bg-white/[0.05] border border-white/10">
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </span>
+            Voltar
+          </Link>
+          <div className="inline-flex items-center gap-2 h-10 px-3.5 rounded-full border border-white/10 bg-white/[0.03] text-[12px] text-white/80">
+            <Lock className="h-3.5 w-3.5 text-[#A78BFA]" />
+            Checkout <span className="font-semibold text-white">100% seguro</span>
+          </div>
+        </div>
         <Stepper current={charge ? 2 : 1} />
 
         <div className="mt-5 sm:mt-6 grid gap-5 lg:gap-7 lg:grid-cols-[minmax(0,1fr)_420px]">
