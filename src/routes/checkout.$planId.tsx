@@ -233,6 +233,7 @@ function CheckoutPage() {
               <Field label="Nome completo" icon={User} error={errors.name}>
                 <input
                   required
+                  disabled={locked}
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
                   placeholder="Como está no documento"
@@ -245,6 +246,7 @@ function CheckoutPage() {
                 <Field label="E-mail" icon={Mail} error={errors.email}>
                   <input
                     required
+                    disabled={locked}
                     type="email"
                     value={form.email}
                     onChange={(e) => set("email", e.target.value)}
@@ -256,6 +258,7 @@ function CheckoutPage() {
                 <Field label="Telefone" icon={Phone} error={errors.phone}>
                   <input
                     required
+                    disabled={locked}
                     inputMode="tel"
                     value={form.phone}
                     onChange={(e) => set("phone", maskPhone(e.target.value))}
@@ -269,6 +272,7 @@ function CheckoutPage() {
               <Field label="CPF" icon={IdCard} error={errors.cpf}>
                 <input
                   required
+                  disabled={locked}
                   inputMode="numeric"
                   value={form.cpf}
                   onChange={(e) => set("cpf", maskCPF(e.target.value))}
