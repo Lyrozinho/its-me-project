@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MinhasComprasRouteImport } from './routes/minhas-compras'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutPlanIdRouteImport } from './routes/checkout.$planId'
+import { Route as ApiPublicIntrospectHyroRouteImport } from './routes/api/public/introspect-hyro'
 
 const MinhasComprasRoute = MinhasComprasRouteImport.update({
   id: '/minhas-compras',
@@ -28,35 +29,57 @@ const CheckoutPlanIdRoute = CheckoutPlanIdRouteImport.update({
   path: '/checkout/$planId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicIntrospectHyroRoute = ApiPublicIntrospectHyroRouteImport.update({
+  id: '/api/public/introspect-hyro',
+  path: '/api/public/introspect-hyro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/api/public/introspect-hyro': typeof ApiPublicIntrospectHyroRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/api/public/introspect-hyro': typeof ApiPublicIntrospectHyroRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/api/public/introspect-hyro': typeof ApiPublicIntrospectHyroRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/minhas-compras' | '/checkout/$planId'
+  fullPaths:
+    | '/'
+    | '/minhas-compras'
+    | '/checkout/$planId'
+    | '/api/public/introspect-hyro'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/minhas-compras' | '/checkout/$planId'
-  id: '__root__' | '/' | '/minhas-compras' | '/checkout/$planId'
+  to:
+    | '/'
+    | '/minhas-compras'
+    | '/checkout/$planId'
+    | '/api/public/introspect-hyro'
+  id:
+    | '__root__'
+    | '/'
+    | '/minhas-compras'
+    | '/checkout/$planId'
+    | '/api/public/introspect-hyro'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MinhasComprasRoute: typeof MinhasComprasRoute
   CheckoutPlanIdRoute: typeof CheckoutPlanIdRoute
+  ApiPublicIntrospectHyroRoute: typeof ApiPublicIntrospectHyroRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +105,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutPlanIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/introspect-hyro': {
+      id: '/api/public/introspect-hyro'
+      path: '/api/public/introspect-hyro'
+      fullPath: '/api/public/introspect-hyro'
+      preLoaderRoute: typeof ApiPublicIntrospectHyroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +119,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MinhasComprasRoute: MinhasComprasRoute,
   CheckoutPlanIdRoute: CheckoutPlanIdRoute,
+  ApiPublicIntrospectHyroRoute: ApiPublicIntrospectHyroRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
