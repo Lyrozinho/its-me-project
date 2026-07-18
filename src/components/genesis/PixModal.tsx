@@ -84,8 +84,11 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
         const s = normalize(r.status || "");
         if (s !== "pending") {
           setStatus(s);
-          if (s === "paid") updateActiveCharge({ status: "paid" });
-          clearActiveCharge();
+          if (s === "paid") {
+            updateActiveCharge({ status: "paid" });
+          } else {
+            clearActiveCharge();
+          }
         }
       } catch { /* silently retry */ }
     };
