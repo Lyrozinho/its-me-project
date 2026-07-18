@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, X, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Copy, Check, X, Loader2, CheckCircle2, AlertCircle, Minus } from "lucide-react";
 import { PixIcon } from "./PixIcon";
 import { formatBRL } from "@/lib/plans";
 import { getPixStatus } from "@/lib/checkout.functions";
+import { clearActiveCharge, updateActiveCharge } from "@/lib/pix-store";
 
 type Charge = {
   id: string;
@@ -24,7 +25,8 @@ function normalize(s: string): Status {
   return "pending";
 }
 
-export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => void }) {
+export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onClose: () => void; onMinimize?: () => void }) {
+
   const deadline = useMemo(() => {
     const remote = charge.expiresAt ? new Date(charge.expiresAt).getTime() : NaN;
     const fromRemote = Number.isFinite(remote) ? remote : 0;
@@ -51,7 +53,10 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
 
   useEffect(() => {
     if (status !== "pending") return;
-    if (remaining <= 0) { setStatus("expired"); return; }
+    if (remaining <= 0) {
+      setStatus("expired");
+      clearActiveCharge();
+    }
   }, [remaining, status]);
 
   useEffect(() => {
@@ -62,7 +67,11 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
         const r = await getPixStatus({ data: { id: charge.id } });
         if (cancelled) return;
         const s = normalize(r.status || "");
-        if (s !== "pending") setStatus(s);
+        if (s !== "pending") {
+          setStatus(s);
+          if (s === "paid") updateActiveCharge({ status: "paid" });
+          clearActiveCharge();
+        }
       } catch { /* silently retry */ }
     };
     pollRef.current = window.setInterval(tick, 4000);
@@ -73,15 +82,23 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
     };
   }, [charge.id, status]);
 
+  const minimize = onMinimize ?? onClose;
+
+  const closeAndDiscard = () => {
+    clearActiveCharge();
+    onClose();
+  };
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") minimize(); };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, [minimize]);
+
 
   const copy = async () => {
     if (!charge.qrCodeText) return;
@@ -97,7 +114,7 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] grid place-items-center p-3 sm:p-6 bg-black/70 backdrop-blur-md"
-        onClick={onClose}
+        onClick={minimize}
       >
         <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.97 }}
@@ -107,16 +124,28 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
           onClick={(e) => e.stopPropagation()}
           className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#120C24]/95 backdrop-blur-xl shadow-[0_30px_100px_-30px_rgba(91,61,245,0.6)] overflow-hidden max-h-[92vh] overflow-y-auto no-scrollbar"
         >
-          <button
-            onClick={onClose}
-            aria-label="Fechar"
-            className="absolute top-3 right-3 z-10 h-9 w-9 grid place-items-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+            {status === "pending" && (
+              <button
+                onClick={minimize}
+                aria-label="Minimizar"
+                title="Minimizar (o Pix continua ativo)"
+                className="h-9 w-9 grid place-items-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors"
+              >
+                <Minus className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              onClick={status === "pending" ? minimize : closeAndDiscard}
+              aria-label="Fechar"
+              className="h-9 w-9 grid place-items-center rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white/70 hover:text-white transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
 
           <div className="p-5 sm:p-6">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 pr-20">
               <div className="h-11 w-11 rounded-2xl bg-white grid place-items-center shrink-0">
                 <PixIcon className="h-6 w-6" />
               </div>
@@ -127,10 +156,11 @@ export function PixModal({ charge, onClose }: { charge: Charge; onClose: () => v
             </div>
 
             {status === "paid" ? (
-              <SuccessState amount={charge.amount} onClose={onClose} />
+              <SuccessState amount={charge.amount} onClose={closeAndDiscard} />
             ) : status === "expired" ? (
-              <ExpiredState onClose={onClose} />
+              <ExpiredState onClose={closeAndDiscard} />
             ) : (
+
               <>
                 {/* Timer */}
                 <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] p-3">

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
@@ -9,6 +9,8 @@ import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
 import { createPixCharge } from "@/lib/checkout.functions";
+import { getActiveCharge, saveActiveCharge, clearActiveCharge } from "@/lib/pix-store";
+
 
 export const Route = createFileRoute("/checkout/$planId")({
   head: ({ params }) => ({
@@ -84,6 +86,21 @@ function CheckoutPage() {
     expiresAt: string | null;
     amount: number;
   }>(null);
+  const lastAttemptRef = useRef(0);
+
+  // Resume an in-progress PIX for this plan (mini card → checkout, or accidental close)
+  useEffect(() => {
+    const stored = getActiveCharge();
+    if (stored && stored.planId === plan.id) {
+      setCharge({
+        id: stored.id,
+        qrCodeBase64: stored.qrCodeBase64,
+        qrCodeText: stored.qrCodeText,
+        expiresAt: new Date(stored.expiresAt).toISOString(),
+        amount: stored.amount,
+      });
+    }
+  }, [plan.id]);
 
   const discount = useMemo(() => plan.old - plan.price, [plan]);
 
@@ -102,7 +119,33 @@ function CheckoutPage() {
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     setServerError(null);
+
+    // 1) Reuse any active charge instead of creating a new one
+    const active = getActiveCharge();
+    if (active) {
+      if (active.planId !== plan.id) {
+        setServerError("Você já tem um Pix em aberto de outro plano. Finalize ou aguarde expirar antes de gerar outro.");
+        return;
+      }
+      setCharge({
+        id: active.id,
+        qrCodeBase64: active.qrCodeBase64,
+        qrCodeText: active.qrCodeText,
+        expiresAt: new Date(active.expiresAt).toISOString(),
+        amount: active.amount,
+      });
+      return;
+    }
+
+    // 2) Anti-spam: minimum interval between creation attempts
+    const now = Date.now();
+    if (now - lastAttemptRef.current < 8000) {
+      setServerError("Aguarde alguns segundos antes de tentar novamente.");
+      return;
+    }
+
     if (!validate()) return;
+    lastAttemptRef.current = now;
     setSubmitting(true);
     try {
       const c = await createPixCharge({
@@ -114,6 +157,22 @@ function CheckoutPage() {
         },
       });
       setCharge(c);
+      // Persist so mini card / refresh / accidental close keeps the Pix alive
+      const remoteExpiry = c.expiresAt ? new Date(c.expiresAt).getTime() : NaN;
+      const expiresAt = Number.isFinite(remoteExpiry) && remoteExpiry > Date.now()
+        ? remoteExpiry
+        : Date.now() + 5 * 60 * 1000;
+      saveActiveCharge({
+        planId: plan.id,
+        planTitle: plan.title,
+        id: c.id,
+        qrCodeBase64: c.qrCodeBase64,
+        qrCodeText: c.qrCodeText,
+        expiresAt,
+        amount: c.amount,
+        createdAt: Date.now(),
+        status: "pending",
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha ao gerar Pix. Tente novamente.";
       setServerError(msg);
@@ -121,6 +180,7 @@ function CheckoutPage() {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
@@ -299,7 +359,14 @@ function CheckoutPage() {
       </main>
       <Footer />
 
-      {charge && <PixModal charge={charge} onClose={() => setCharge(null)} />}
+      {charge && (
+        <PixModal
+          charge={charge}
+          onMinimize={() => setCharge(null)}
+          onClose={() => { clearActiveCharge(); setCharge(null); }}
+        />
+      )}
+
 
       <style>{`
         .input {
