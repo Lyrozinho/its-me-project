@@ -106,7 +106,11 @@ function CheckoutPage() {
         qrCodeText: stored.qrCodeText,
         expiresAt: new Date(stored.expiresAt).toISOString(),
         amount: stored.amount,
+        customerName: stored.customerName,
+        customerEmail: stored.customerEmail,
+        planId: stored.planId,
       });
+
     };
     openFromStore();
     const onOpen = () => openFromStore();
