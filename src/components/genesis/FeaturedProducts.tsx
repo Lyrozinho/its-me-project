@@ -126,26 +126,22 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
       <div className="relative m-3 h-[320px] sm:h-[360px] rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#1A1236] via-[#120C24] to-[#0A0616]">
         {plan.image ? (
           <>
-            <motion.img
+            <img
               src={plan.image}
               alt={plan.title}
               className="absolute inset-0 h-full w-full object-cover"
-              initial={{ scale: 1 }}
-              whileHover={{ scale: 1.04 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
               draggable={false}
             />
             {/* Subtle inner vignette to blend with card */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
-            {/* Sheen on hover */}
-            <div className="pointer-events-none absolute -inset-x-1/2 -top-1/2 h-[200%] w-[60%] rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 group-hover:translate-x-[220%] transition-all duration-1000 ease-out" />
-            {/* Glow on hover */}
-            <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[inset_0_0_60px_rgba(122,92,255,0.35)]" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+            {/* Soft purple glow on hover (no sheen, no scale) */}
+            <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 shadow-[inset_0_0_50px_rgba(122,92,255,0.28)]" />
             {/* Top-left offer badge */}
             <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7A5CFF] to-[#5B3DF5] px-3 py-1 text-[11px] font-black text-white shadow-[0_6px_20px_-6px_rgba(91,61,245,0.9)]">
               <Zap className="h-3 w-3" /> -15% OFF
             </span>
           </>
+
         ) : (
           <>
             <div className="absolute inset-0 grid-tech opacity-30" />
