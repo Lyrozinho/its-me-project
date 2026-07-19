@@ -62,7 +62,7 @@ export function FeaturedProducts() {
           </div>
         </div>
 
-        <div className="relative mt-12">
+        <div className="relative mt-6 md:mt-12">
           {/* Arrows */}
           <button
             aria-label="Anterior"
