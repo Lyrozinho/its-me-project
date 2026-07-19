@@ -1,10 +1,9 @@
-import pixAsset from "@/assets/pix-icon.png.asset.json";
-import { assetUrl } from "@/lib/asset";
+const PIX_ICON = "/assets/pix-icon.png";
 
 export function PixIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <img
-      src={assetUrl(pixAsset)}
+      src={PIX_ICON}
       alt="Pix"
       width={64}
       height={64}
