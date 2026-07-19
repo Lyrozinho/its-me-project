@@ -81,12 +81,12 @@ export function FeaturedProducts() {
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          {/* Edge fades only appear when there is hidden content on that side. */}
+          {/* Edge fades only on desktop where arrows exist. */}
           {canPrev ? (
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-6 z-10 bg-gradient-to-r from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-6 z-10 bg-gradient-to-r from-background to-transparent hidden md:block" />
           ) : null}
           {canNext ? (
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-6 z-10 bg-gradient-to-l from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-6 z-10 bg-gradient-to-l from-background to-transparent hidden md:block" />
           ) : null}
 
           <div
