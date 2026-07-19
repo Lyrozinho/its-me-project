@@ -19,7 +19,7 @@ export function VideoTutorial() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const [started, setStarted] = useState(false);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -76,7 +76,17 @@ export function VideoTutorial() {
     if (!v) return;
     setStarted(true);
     if (v.paused) {
-      v.play();
+      v.muted = false;
+      setMuted(false);
+      v.volume = 1;
+      const p = v.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {
+          v.muted = true;
+          setMuted(true);
+          v.play().catch(() => {});
+        });
+      }
       setPlaying(true);
     } else {
       v.pause();
@@ -139,7 +149,9 @@ export function VideoTutorial() {
 
           <div
             ref={wrapRef}
-            className="relative aspect-video rounded-3xl overflow-hidden glass-strong border border-white/10 shadow-[0_30px_80px_-30px_rgba(91,61,245,0.5)]"
+            onContextMenu={(e) => e.preventDefault()}
+            className="relative aspect-video rounded-3xl overflow-hidden glass-strong border border-white/10 shadow-[0_30px_80px_-30px_rgba(91,61,245,0.5)] select-none"
+            style={{ WebkitUserSelect: "none", userSelect: "none" }}
           >
             <video
               ref={videoRef}
@@ -147,10 +159,21 @@ export function VideoTutorial() {
               poster={TUTORIAL_COVER}
               muted={muted}
               playsInline
-              preload="metadata"
-              className="absolute inset-0 h-full w-full object-cover bg-black cursor-pointer"
+              preload="auto"
+              disablePictureInPicture
+              controlsList="nodownload noremoteplayback noplaybackrate"
+              onContextMenu={(e) => e.preventDefault()}
+              className="absolute inset-0 h-full w-full object-cover bg-black cursor-pointer pointer-events-auto"
+              style={{ WebkitUserSelect: "none", userSelect: "none" }}
               onClick={togglePlay}
             />
+            {/* Anti-capture transparent overlay (deters basic screen recorders on some platforms) */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{ mixBlendMode: "overlay", background: "transparent" }}
+            />
+
 
             {/* Gradient overlay - only after playback starts, for controls legibility */}
             {started && (
