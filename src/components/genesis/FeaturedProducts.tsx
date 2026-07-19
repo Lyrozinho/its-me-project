@@ -46,17 +46,17 @@ export function FeaturedProducts() {
   };
 
   return (
-    <section id="produtos" className="relative py-16 sm:py-24 lg:py-32">
+    <section id="produtos" className="relative py-10 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
 
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-6">
           <SectionHeader
             align="left"
             eyebrow="Planos"
             title={<>Extensão <span className="text-gradient">Créditos Infinitos</span></>}
             description="Escolha a duração ideal e ative na hora. PIX, entrega automática e suporte dedicado."
           />
-          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/85">
+          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/85 self-start md:self-auto">
             <Clock className="h-4 w-4 text-[#A78BFA]" />
             Teste grátis de 10min
           </div>
