@@ -46,23 +46,23 @@ export function FeaturedProducts() {
   };
 
   return (
-    <section id="produtos" className="relative py-16 sm:py-24 lg:py-32">
+    <section id="produtos" className="relative py-10 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
 
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-6">
           <SectionHeader
             align="left"
             eyebrow="Planos"
             title={<>Extensão <span className="text-gradient">Créditos Infinitos</span></>}
             description="Escolha a duração ideal e ative na hora. PIX, entrega automática e suporte dedicado."
           />
-          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/85">
+          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/85 self-start md:self-auto">
             <Clock className="h-4 w-4 text-[#A78BFA]" />
             Teste grátis de 10min
           </div>
         </div>
 
-        <div className="relative mt-12">
+        <div className="relative mt-6 md:mt-12">
           {/* Arrows */}
           <button
             aria-label="Anterior"
@@ -81,12 +81,12 @@ export function FeaturedProducts() {
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          {/* Edge fades only appear when there is hidden content on that side. */}
+          {/* Edge fades only on desktop where arrows exist. */}
           {canPrev ? (
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-6 z-10 bg-gradient-to-r from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-6 z-10 bg-gradient-to-r from-background to-transparent hidden md:block" />
           ) : null}
           {canNext ? (
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-6 z-10 bg-gradient-to-l from-background to-transparent" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-6 z-10 bg-gradient-to-l from-background to-transparent hidden md:block" />
           ) : null}
 
           <div
