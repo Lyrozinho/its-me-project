@@ -25,6 +25,13 @@ export function VideoTutorial() {
   const [duration, setDuration] = useState(0);
   const [buffered, setBuffered] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onFs = () => setIsFullscreen(document.fullscreenElement === wrapRef.current);
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -163,7 +170,7 @@ export function VideoTutorial() {
               disablePictureInPicture
               controlsList="nodownload noremoteplayback noplaybackrate"
               onContextMenu={(e) => e.preventDefault()}
-              className="absolute inset-0 h-full w-full object-cover bg-black cursor-pointer pointer-events-auto"
+              className={`absolute inset-0 h-full w-full bg-black cursor-pointer pointer-events-auto ${isFullscreen ? "object-contain" : "object-cover"}`}
               style={{ WebkitUserSelect: "none", userSelect: "none" }}
               onClick={togglePlay}
             />
