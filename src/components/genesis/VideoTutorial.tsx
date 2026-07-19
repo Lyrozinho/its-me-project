@@ -25,6 +25,13 @@ export function VideoTutorial() {
   const [duration, setDuration] = useState(0);
   const [buffered, setBuffered] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onFs = () => setIsFullscreen(document.fullscreenElement === wrapRef.current);
+    document.addEventListener("fullscreenchange", onFs);
+    return () => document.removeEventListener("fullscreenchange", onFs);
+  }, []);
 
   useEffect(() => {
     const v = videoRef.current;
