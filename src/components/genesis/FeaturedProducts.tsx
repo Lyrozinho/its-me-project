@@ -107,10 +107,10 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
   return (
     <motion.article
       data-card
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true, amount: 0.05 }}
+      transition={{ duration: 0.4, delay: index * 0.04 }}
       whileHover={{ y: -6 }}
       className="group relative isolate snap-start shrink-0 w-[86vw] max-w-[340px] sm:w-[360px] sm:max-w-none rounded-3xl bg-[#0F0A20] border border-white/[0.07] shadow-[0_14px_34px_-28px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow,transform] duration-500 hover:border-white/14 hover:shadow-[0_16px_34px_-30px_rgba(122,92,255,0.32)]"
     >
