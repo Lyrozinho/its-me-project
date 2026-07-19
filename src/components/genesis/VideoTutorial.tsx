@@ -170,7 +170,7 @@ export function VideoTutorial() {
               disablePictureInPicture
               controlsList="nodownload noremoteplayback noplaybackrate"
               onContextMenu={(e) => e.preventDefault()}
-              className="absolute inset-0 h-full w-full object-cover bg-black cursor-pointer pointer-events-auto"
+              className={`absolute inset-0 h-full w-full bg-black cursor-pointer pointer-events-auto ${isFullscreen ? "object-contain" : "object-cover"}`}
               style={{ WebkitUserSelect: "none", userSelect: "none" }}
               onClick={togglePlay}
             />
