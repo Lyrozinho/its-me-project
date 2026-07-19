@@ -19,7 +19,7 @@ export function VideoTutorial() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const [started, setStarted] = useState(false);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
