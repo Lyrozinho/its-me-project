@@ -5,8 +5,7 @@ import { SectionHeader } from "./SectionHeader";
 
 const TUTORIAL_COVER = "/assets/tutorial-cover.png";
 
-const VIDEO_SRC =
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+const VIDEO_SRC = "/assets/tutorial.mp4";
 
 function fmt(t: number) {
   if (!isFinite(t)) return "0:00";
