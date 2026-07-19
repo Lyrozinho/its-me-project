@@ -76,7 +76,17 @@ export function VideoTutorial() {
     if (!v) return;
     setStarted(true);
     if (v.paused) {
-      v.play();
+      v.muted = false;
+      setMuted(false);
+      v.volume = 1;
+      const p = v.play();
+      if (p && typeof p.catch === "function") {
+        p.catch(() => {
+          v.muted = true;
+          setMuted(true);
+          v.play().catch(() => {});
+        });
+      }
       setPlaying(true);
     } else {
       v.pause();
