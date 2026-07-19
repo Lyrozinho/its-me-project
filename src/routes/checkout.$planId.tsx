@@ -367,7 +367,7 @@ function CheckoutPage() {
           >
             <div className="relative p-3 sm:p-4">
               <div className="relative h-48 sm:h-64 rounded-2xl overflow-hidden border border-white/10">
-                <img src={plan.image} alt={plan.title} className="absolute inset-0 h-full w-full object-cover" />
+                <img src={plan.image} alt={plan.title} loading="eager" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
                 <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7A5CFF] to-[#5B3DF5] px-3 py-1 text-[11px] font-black text-white">
                   <Zap className="h-3 w-3" /> {plan.duration}
