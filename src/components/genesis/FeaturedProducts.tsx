@@ -2,6 +2,8 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Infinity as InfinityIcon, Zap, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
+import { TrialModal } from "./TrialModal";
+
 import { PLANS, type Plan, formatBRL } from "@/lib/plans";
 import { SectionHeader } from "./SectionHeader";
 
@@ -17,6 +19,8 @@ export function FeaturedProducts() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const [trialOpen, setTrialOpen] = useState(false);
+
 
   const updateArrows = () => {
     const el = scrollerRef.current;
@@ -56,11 +60,17 @@ export function FeaturedProducts() {
             title={<>Extensão <span className="text-gradient">Créditos Infinitos</span></>}
             description="Escolha a duração ideal e ative na hora. PIX, entrega automática e suporte dedicado."
           />
-          <div className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/85 self-start md:self-auto">
+          <button
+            type="button"
+            onClick={() => setTrialOpen(true)}
+            className="group inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/90 hover:text-white hover:bg-white/[0.08] border border-white/10 hover:border-[#7A5CFF]/50 transition-all self-start md:self-auto"
+          >
             <Clock className="h-4 w-4 text-[#A78BFA]" />
             Teste grátis de 10min
-          </div>
+          </button>
         </div>
+        <TrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
+
 
         <div className="relative mt-6 md:mt-12">
           {/* Arrows */}
