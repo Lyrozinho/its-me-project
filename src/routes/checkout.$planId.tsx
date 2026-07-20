@@ -400,12 +400,9 @@ function CheckoutPage() {
                 ))}
               </ul>
 
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2 text-sm">
-                <Row label="Subtotal" value={formatBRL(plan.old)} muted />
-                <Row label="Desconto" value={`- ${formatBRL(discount)}`} accent />
-                <div className="h-px bg-white/10 my-2" />
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                 <div className="flex items-end justify-between">
-                  <div className="text-xs text-white/50">Total à vista</div>
+                  <div className="text-xs text-white/50">Total à vista no PIX</div>
                   <div className="text-2xl font-black tracking-tight">
                     <span className="text-gradient">{formatBRL(plan.price)}</span>
                   </div>

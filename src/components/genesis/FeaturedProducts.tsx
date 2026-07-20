@@ -239,7 +239,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
 
         <div className="mt-5 flex items-end justify-between gap-3">
           <div className="min-w-0">
-            <div className="text-xs text-white/35 line-through">{formatBRL(plan.old)}</div>
+            <div className="text-[10px] font-bold tracking-wider text-white/40 uppercase">à vista no PIX</div>
             <div className="text-2xl sm:text-3xl font-black tracking-tight">
               <span className="text-gradient">{formatBRL(plan.price)}</span>
             </div>
