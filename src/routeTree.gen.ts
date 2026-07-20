@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MinhasComprasRouteImport } from './routes/minhas-compras'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutPlanIdRouteImport } from './routes/checkout.$planId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinhasComprasRoute = MinhasComprasRouteImport.update({
   id: '/minhas-compras',
   path: '/minhas-compras',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesById {
@@ -52,25 +60,50 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
+  fullPaths:
+    | '/'
+    | '/download'
+    | '/minhas-compras'
+    | '/sitemap.xml'
+    | '/checkout/$planId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
-  id: '__root__' | '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
+  to:
+    | '/'
+    | '/download'
+    | '/minhas-compras'
+    | '/sitemap.xml'
+    | '/checkout/$planId'
+  id:
+    | '__root__'
+    | '/'
+    | '/download'
+    | '/minhas-compras'
+    | '/sitemap.xml'
+    | '/checkout/$planId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DownloadRoute: typeof DownloadRoute
   MinhasComprasRoute: typeof MinhasComprasRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CheckoutPlanIdRoute: typeof CheckoutPlanIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/minhas-compras': {
       id: '/minhas-compras'
       path: '/minhas-compras'
@@ -106,6 +139,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DownloadRoute: DownloadRoute,
   MinhasComprasRoute: MinhasComprasRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   CheckoutPlanIdRoute: CheckoutPlanIdRoute,
 }
 export const routeTree = rootRouteImport
