@@ -58,7 +58,7 @@ export function Navbar() {
             >
               <User className="h-4 w-4" /> <span className="hidden xl:inline">Login</span>
             </a>
-            <ShimmerCTA href="#planos">Começar agora</ShimmerCTA>
+            <ShimmerCTA href="#produtos">Começar agora</ShimmerCTA>
           </div>
 
 
@@ -95,7 +95,7 @@ export function Navbar() {
                   {l.label}
                 </a>
               ))}
-              <ShimmerCTA href="#planos" onClick={() => setOpen(false)} block>
+              <ShimmerCTA href="#produtos" onClick={() => setOpen(false)} block>
                 Começar agora
               </ShimmerCTA>
 
