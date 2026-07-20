@@ -1,14 +1,19 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard, CreditCard } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 
 import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
+import { CardForm, type TokenizedCard } from "@/components/genesis/CardForm";
+import { CardResultModal } from "@/components/genesis/CardResultModal";
+import { AcceptedBrands } from "@/components/genesis/BrandIcons";
 import { createPixCharge } from "@/lib/checkout.functions";
+import { createCardPayment } from "@/lib/mercadopago.functions";
+import { withCardFee } from "@/lib/mp-config";
 import { getActiveCharge, saveActiveCharge, clearActiveCharge, useActiveCharge } from "@/lib/pix-store";
 
 
