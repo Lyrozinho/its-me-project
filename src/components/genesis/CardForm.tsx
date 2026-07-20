@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CreditCard, User as UserIcon, Calendar, Lock, Loader2 } from "lucide-react";
 import { MP_PUBLIC_KEY } from "@/lib/mp-config";
-import { BrandIcon, AcceptedBrands } from "./BrandIcons";
+import { BrandIcon } from "./BrandIcons";
 import { detectBrand, maskCardNumber, maskExpiry, maskCVV, validCardNumber, validExpiry, type CardBrand } from "@/lib/card";
 
 // Minimal ambient typing for the Mercado Pago v2 SDK loaded from CDN.
