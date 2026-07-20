@@ -125,7 +125,8 @@ function CheckoutPage() {
   const locked = !!storedCharge;
   const lockedThisPlan = !!storedCharge && storedCharge.planId === plan.id;
 
-  const discount = useMemo(() => plan.old - plan.price, [plan]);
+
+
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -468,14 +469,7 @@ function Field({
   );
 }
 
-function Row({ label, value, muted, accent }: { label: string; value: string; muted?: boolean; accent?: boolean }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className={muted ? "text-white/50" : "text-white/70"}>{label}</span>
-      <span className={accent ? "text-[#A78BFA] font-semibold" : "text-white"}>{value}</span>
-    </div>
-  );
-}
+
 
 function Stepper({ current }: { current: 1 | 2 | 3 }) {
   const steps = [
