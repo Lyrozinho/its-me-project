@@ -20,7 +20,6 @@ export function FeaturedProducts() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
-  const [trialOpen, setTrialOpen] = useState(false);
 
 
   const updateArrows = () => {
@@ -54,23 +53,14 @@ export function FeaturedProducts() {
     <section id="produtos" className="relative py-10 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
 
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-6">
-          <SectionHeader
-            align="left"
-            eyebrow="Planos"
-            title={<>Extensão <span className="text-gradient">Créditos Infinitos</span></>}
-            description="Escolha a duração ideal e ative na hora. PIX, entrega automática e suporte dedicado."
-          />
-          <button
-            type="button"
-            onClick={() => setTrialOpen(true)}
-            className="group inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm text-white/90 hover:text-white hover:bg-white/[0.08] border border-white/10 hover:border-[#7A5CFF]/50 transition-all self-start md:self-auto"
-          >
-            <Clock className="h-4 w-4 text-[#A78BFA]" />
-            Teste grátis de 10min
-          </button>
-        </div>
-        <TrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
+        <SectionHeader
+          align="left"
+          eyebrow="Planos"
+          title={<>Extensão <span className="text-gradient">Créditos Infinitos</span></>}
+          description="Escolha a duração ideal e ative na hora. PIX, entrega automática e suporte dedicado."
+        />
+
+
 
 
         <div className="relative mt-6 md:mt-12">
