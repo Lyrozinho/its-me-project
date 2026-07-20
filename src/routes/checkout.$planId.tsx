@@ -438,7 +438,7 @@ function CheckoutPage() {
 
 
 
-            </form>
+            </div>
           </motion.section>
 
           {/* SUMMARY */}
