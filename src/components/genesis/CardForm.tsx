@@ -216,10 +216,6 @@ export function CardForm({
         {busy ? "Validando cartão..." : submitting ? "Processando..." : submitLabel}
       </button>
 
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <span className="text-[11px] text-white/45">Bandeiras aceitas</span>
-        <AcceptedBrands />
-      </div>
     </form>
   );
 }
