@@ -254,7 +254,7 @@ function CheckoutPage() {
             Checkout <span className="font-semibold text-white">100% seguro</span>
           </div>
         </div>
-        <Stepper current={charge ? 2 : 1} />
+        <Stepper current={charge || cardResult ? 2 : 1} />
 
         <div className="mt-5 sm:mt-6 grid gap-5 lg:gap-7 lg:grid-cols-[minmax(0,1fr)_420px]">
 
