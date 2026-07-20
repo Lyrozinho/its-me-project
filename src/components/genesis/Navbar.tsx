@@ -24,10 +24,20 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
         <div className="grid h-16 items-center gap-4 grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr]">
-          <a href="/" className="flex items-center gap-2 shrink-0 justify-self-start">
-            <div className="h-7 w-7 rounded-md bg-gradient-to-br from-[#7A5CFF] to-[#5B3DF5] grid place-items-center">
-              <span className="text-white text-[13px] font-black">L</span>
-            </div>
+          <a href="/" className="flex items-center gap-2.5 shrink-0 justify-self-start group">
+            <span className="relative h-10 w-10 rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_6px_20px_-8px_rgba(122,92,255,0.7)] transition-transform group-hover:scale-[1.04]">
+              <img
+                src="/assets/lovehyro-mark.jpg"
+                alt="Love Hyro"
+                width={40}
+                height={40}
+                loading="eager"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+                draggable={false}
+              />
+              <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-[#A78BFA]/20" />
+            </span>
             <span className="text-[15px] font-semibold tracking-tight">Love Hyro</span>
           </a>
 
@@ -41,7 +51,7 @@ export function Navbar() {
           <div className="hidden sm:flex items-center gap-2 shrink-0 justify-self-end whitespace-nowrap">
 
             <a
-              href="#login"
+              href="https://painel.lovehyro.store/"
               aria-label="Login"
               className="h-10 w-10 xl:w-auto xl:px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center justify-center gap-2"
             >
@@ -91,7 +101,7 @@ export function Navbar() {
 
 
               <a
-                href="#login"
+                href="https://painel.lovehyro.store/"
                 onClick={() => setOpen(false)}
                 className="h-11 rounded-full text-sm font-medium text-white/90 hover:text-white bg-white/5 border border-white/10 inline-flex items-center justify-center gap-2"
               >
