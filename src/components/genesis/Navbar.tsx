@@ -101,7 +101,7 @@ export function Navbar() {
 
 
               <a
-                href="#login"
+                href="https://painel.lovehyro.store/"
                 onClick={() => setOpen(false)}
                 className="h-11 rounded-full text-sm font-medium text-white/90 hover:text-white bg-white/5 border border-white/10 inline-flex items-center justify-center gap-2"
               >
