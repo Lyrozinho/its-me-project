@@ -51,7 +51,7 @@ export function Navbar() {
           <div className="hidden sm:flex items-center gap-2 shrink-0 justify-self-end whitespace-nowrap">
 
             <a
-              href="#login"
+              href="https://painel.lovehyro.store/"
               aria-label="Login"
               className="h-10 w-10 xl:w-auto xl:px-4 rounded-full text-sm text-white/85 hover:text-white hover:bg-white/5 transition-colors inline-flex items-center justify-center gap-2"
             >
