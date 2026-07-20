@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CreditCard, User as UserIcon, Calendar, Lock, Loader2 } from "lucide-react";
 import { MP_PUBLIC_KEY } from "@/lib/mp-config";
-import { BrandIcon, AcceptedBrands } from "./BrandIcons";
+import { BrandIcon } from "./BrandIcons";
 import { detectBrand, maskCardNumber, maskExpiry, maskCVV, validCardNumber, validExpiry, type CardBrand } from "@/lib/card";
 
 // Minimal ambient typing for the Mercado Pago v2 SDK loaded from CDN.
@@ -216,10 +216,6 @@ export function CardForm({
         {busy ? "Validando cartão..." : submitting ? "Processando..." : submitLabel}
       </button>
 
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <span className="text-[11px] text-white/45">Bandeiras aceitas</span>
-        <AcceptedBrands />
-      </div>
     </form>
   );
 }
