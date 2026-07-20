@@ -32,10 +32,10 @@ export function Navbar() {
           </a>
 
           <nav className="hidden md:flex items-center gap-1 h-11 px-2 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl justify-self-center">
-            <NavPill href="#recursos">Recursos</NavPill>
-            <NavPill href="#planos">Planos</NavPill>
-            <NavPill href="#download">Download</NavPill>
-            <NavPill href="#faq">FAQ</NavPill>
+            <NavPill href="/#recursos">Recursos</NavPill>
+            <NavPill href="/#planos">Planos</NavPill>
+            <NavPill href="/download">Download</NavPill>
+            <NavPill href="/#faq">FAQ</NavPill>
           </nav>
 
           <div className="hidden sm:flex items-center gap-2 shrink-0 justify-self-end whitespace-nowrap">
@@ -71,10 +71,10 @@ export function Navbar() {
           >
             <div className="grid gap-2">
               {[
-                { href: "#recursos", label: "Recursos" },
-                { href: "#planos", label: "Planos" },
-                { href: "#download", label: "Download" },
-                { href: "#faq", label: "FAQ" },
+                { href: "/#recursos", label: "Recursos" },
+                { href: "/#planos", label: "Planos" },
+                { href: "/download", label: "Download" },
+                { href: "/#faq", label: "FAQ" },
               ].map((l) => (
                 <a
                   key={l.href}

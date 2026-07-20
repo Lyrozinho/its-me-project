@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MinhasComprasRouteImport } from './routes/minhas-compras'
+import { Route as DownloadRouteImport } from './routes/download'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutPlanIdRouteImport } from './routes/checkout.$planId'
 
 const MinhasComprasRoute = MinhasComprasRouteImport.update({
   id: '/minhas-compras',
   path: '/minhas-compras',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadRoute = DownloadRouteImport.update({
+  id: '/download',
+  path: '/download',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -31,30 +37,34 @@ const CheckoutPlanIdRoute = CheckoutPlanIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/minhas-compras' | '/checkout/$planId'
+  fullPaths: '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/minhas-compras' | '/checkout/$planId'
-  id: '__root__' | '/' | '/minhas-compras' | '/checkout/$planId'
+  to: '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
+  id: '__root__' | '/' | '/download' | '/minhas-compras' | '/checkout/$planId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DownloadRoute: typeof DownloadRoute
   MinhasComprasRoute: typeof MinhasComprasRoute
   CheckoutPlanIdRoute: typeof CheckoutPlanIdRoute
 }
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/minhas-compras'
       fullPath: '/minhas-compras'
       preLoaderRoute: typeof MinhasComprasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DownloadRoute: DownloadRoute,
   MinhasComprasRoute: MinhasComprasRoute,
   CheckoutPlanIdRoute: CheckoutPlanIdRoute,
 }
