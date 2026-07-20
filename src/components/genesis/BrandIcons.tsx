@@ -19,7 +19,7 @@ const LABELS: Record<Exclude<CardBrand, "unknown">, string> = {
   hipercard: "Hipercard",
 };
 
-export function BrandIcon({ brand, className = "h-8 w-12" }: { brand: CardBrand; className?: string }) {
+export function BrandIcon({ brand, className = "h-5 w-8" }: { brand: CardBrand; className?: string }) {
   if (brand === "unknown") return null;
   return (
     <img
@@ -34,7 +34,7 @@ export function BrandIcon({ brand, className = "h-8 w-12" }: { brand: CardBrand;
 export function AcceptedBrands({ className = "" }: { className?: string }) {
   const list: Exclude<CardBrand, "unknown">[] = ["mastercard", "visa", "elo", "amex", "hipercard"];
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex flex-wrap items-center gap-1.5 sm:gap-2 ${className}`}>
       {list.map((b) => (
         <img
           key={b}
@@ -42,7 +42,7 @@ export function AcceptedBrands({ className = "" }: { className?: string }) {
           alt={LABELS[b]}
           title={LABELS[b]}
           draggable={false}
-          className="h-8 w-[52px] object-contain select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+          className="h-5 w-8 sm:h-6 sm:w-9 object-contain select-none opacity-95"
         />
       ))}
     </div>
