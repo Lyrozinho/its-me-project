@@ -503,6 +503,23 @@ function CheckoutPage() {
         />
       )}
 
+      {cardResult && (
+        <CardResultModal
+          buyer={{
+            planId: plan.id,
+            paymentId: cardResult.id,
+            customerName: form.name.trim(),
+            customerEmail: form.email.trim(),
+            customerPhone: onlyDigits(form.phone),
+            customerCpf: onlyDigits(form.cpf),
+          }}
+          amount={cardResult.amount}
+          status={cardResult.status}
+          statusDetail={cardResult.statusDetail}
+          onClose={() => setCardResult(null)}
+        />
+      )}
+
 
       <style>{`
         .input {
