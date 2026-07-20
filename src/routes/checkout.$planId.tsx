@@ -84,6 +84,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [method, setMethod] = useState<"pix" | "card">("pix");
   const [charge, setCharge] = useState<null | {
     id: string;
     qrCodeBase64: string | null;
@@ -96,8 +97,10 @@ function CheckoutPage() {
     customerCpf?: string;
     planId?: string;
   }>(null);
+  const [cardResult, setCardResult] = useState<null | { id: string; status: string; statusDetail: string; amount: number }>(null);
 
   const lastAttemptRef = useRef(0);
+  const cardAmount = withCardFee(plan.price);
 
   // Open the modal from stored PIX on:
   //  1) initial mount (recover after refresh/navigation back)
