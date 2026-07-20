@@ -13,6 +13,7 @@ export type IssuedLicense = {
 export type IssueLicenseInput = {
   planId: string;
   paymentId: string;
+  provider?: "pix" | "card";
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
@@ -33,12 +34,19 @@ export const issueLicense = createServerFn({ method: "POST" })
     const plan = getPlanById(data.planId);
     if (!plan) throw new Error("Plano não encontrado");
 
-    // Rigid payment verification via VexoPay before issuing anything.
-    const { checkPixStatus } = await import("./vexopay.server");
-    const status = await checkPixStatus(data.paymentId);
-    const normalized = status.toLowerCase();
+    // Rigid payment verification before issuing anything.
+    const provider = data.provider ?? "pix";
+    let normalized: string;
+    if (provider === "card") {
+      const { getCardPaymentStatus } = await import("./mercadopago.functions");
+      const { status } = await getCardPaymentStatus({ data: { id: data.paymentId } });
+      normalized = status.toLowerCase();
+    } else {
+      const { checkPixStatus } = await import("./vexopay.server");
+      normalized = (await checkPixStatus(data.paymentId)).toLowerCase();
+    }
     const isPaid = ["paid", "approved", "completed", "confirmed"].includes(normalized);
-    if (!isPaid) throw new Error(`Pagamento não confirmado (status: ${status})`);
+    if (!isPaid) throw new Error(`Pagamento não confirmado (status: ${normalized})`);
 
     const { getHyroDb } = await import("./hyro-db.server");
     const db = getHyroDb();

@@ -1,14 +1,19 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Clock, Infinity as InfinityIcon, CheckCircle2, Lock, User, Mail, Phone, IdCard, CreditCard } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { Navbar } from "@/components/genesis/Navbar";
 
 import { getPlanById, formatBRL } from "@/lib/plans";
 import { PixIcon } from "@/components/genesis/PixIcon";
 import { PixModal } from "@/components/genesis/PixModal";
+import { CardForm, type TokenizedCard } from "@/components/genesis/CardForm";
+import { CardResultModal } from "@/components/genesis/CardResultModal";
+import { AcceptedBrands } from "@/components/genesis/BrandIcons";
 import { createPixCharge } from "@/lib/checkout.functions";
+import { createCardPayment } from "@/lib/mercadopago.functions";
+import { withCardFee } from "@/lib/mp-config";
 import { getActiveCharge, saveActiveCharge, clearActiveCharge, useActiveCharge } from "@/lib/pix-store";
 
 
@@ -79,6 +84,7 @@ function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [method, setMethod] = useState<"pix" | "card">("pix");
   const [charge, setCharge] = useState<null | {
     id: string;
     qrCodeBase64: string | null;
@@ -91,8 +97,10 @@ function CheckoutPage() {
     customerCpf?: string;
     planId?: string;
   }>(null);
+  const [cardResult, setCardResult] = useState<null | { id: string; status: string; statusDetail: string; amount: number }>(null);
 
   const lastAttemptRef = useRef(0);
+  const cardAmount = withCardFee(plan.price);
 
   // Open the modal from stored PIX on:
   //  1) initial mount (recover after refresh/navigation back)
@@ -140,11 +148,8 @@ function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
-  const submit = async (ev: React.FormEvent) => {
-    ev.preventDefault();
+  const generatePix = async () => {
     setServerError(null);
-
-    // 1) Reuse any active charge instead of creating a new one
     const active = getActiveCharge();
     if (active) {
       if (active.planId !== plan.id) {
@@ -161,17 +166,13 @@ function CheckoutPage() {
         customerEmail: active.customerEmail,
         planId: active.planId,
       });
-
       return;
     }
-
-    // 2) Anti-spam: minimum interval between creation attempts
     const now = Date.now();
     if (now - lastAttemptRef.current < 8000) {
       setServerError("Aguarde alguns segundos antes de tentar novamente.");
       return;
     }
-
     if (!validate()) return;
     lastAttemptRef.current = now;
     setSubmitting(true);
@@ -185,30 +186,49 @@ function CheckoutPage() {
         },
       });
       setCharge({ ...c, customerName: form.name.trim(), customerEmail: form.email.trim(), customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf), planId: plan.id });
-      // Persist so mini card / refresh / accidental close keeps the Pix alive
       const remoteExpiry = c.expiresAt ? new Date(c.expiresAt).getTime() : NaN;
       const expiresAt = Number.isFinite(remoteExpiry) && remoteExpiry > Date.now()
         ? remoteExpiry
         : Date.now() + 5 * 60 * 1000;
       saveActiveCharge({
-        planId: plan.id,
-        planTitle: plan.title,
-        id: c.id,
-        qrCodeBase64: c.qrCodeBase64,
-        qrCodeText: c.qrCodeText,
-        expiresAt,
-        amount: c.amount,
-        createdAt: Date.now(),
-        status: "pending",
-        customerName: form.name.trim(),
-        customerEmail: form.email.trim(),
-        customerPhone: onlyDigits(form.phone),
-        customerCpf: onlyDigits(form.cpf),
+        planId: plan.id, planTitle: plan.title, id: c.id,
+        qrCodeBase64: c.qrCodeBase64, qrCodeText: c.qrCodeText,
+        expiresAt, amount: c.amount, createdAt: Date.now(), status: "pending",
+        customerName: form.name.trim(), customerEmail: form.email.trim(),
+        customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf),
       });
-
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha ao gerar Pix. Tente novamente.";
       setServerError(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCardTokenized = async (card: TokenizedCard) => {
+    setServerError(null);
+    if (!validate()) {
+      setServerError("Preencha seus dados corretamente antes de pagar.");
+      throw new Error("dados incompletos");
+    }
+    setSubmitting(true);
+    try {
+      const res = await createCardPayment({
+        data: {
+          planId: plan.id,
+          token: card.token,
+          paymentMethodId: card.paymentMethodId,
+          issuerId: card.issuerId ?? null,
+          customerName: form.name.trim(),
+          customerEmail: form.email.trim(),
+          customerDocument: onlyDigits(form.cpf),
+        },
+      });
+      setCardResult(res);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Falha no cartão. Verifique os dados.";
+      setServerError(msg);
+      throw err;
     } finally {
       setSubmitting(false);
     }
@@ -234,7 +254,7 @@ function CheckoutPage() {
             Checkout <span className="font-semibold text-white">100% seguro</span>
           </div>
         </div>
-        <Stepper current={charge ? 2 : 1} />
+        <Stepper current={charge || cardResult ? 2 : 1} />
 
         <div className="mt-5 sm:mt-6 grid gap-5 lg:gap-7 lg:grid-cols-[minmax(0,1fr)_420px]">
 
@@ -245,7 +265,7 @@ function CheckoutPage() {
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
             className="rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-4 sm:p-8"
           >
-            <form onSubmit={submit} className="space-y-5" noValidate>
+            <div className="space-y-5">
               <div className="flex items-center gap-2 text-[11px] font-bold tracking-wider text-white/50 uppercase">
                 <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">1</span>
                 Dados do comprador
@@ -306,42 +326,101 @@ function CheckoutPage() {
                 <span className="h-6 w-6 rounded-full grid place-items-center bg-[#5B3DF5]/20 border border-[#7A5CFF]/40 text-[10px] text-[#A78BFA]">2</span>
                 Pagamento
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                <div className="h-10 w-10 rounded-xl grid place-items-center bg-white shrink-0">
-                  <PixIcon className="h-6 w-6" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold">PIX · Aprovação instantânea</div>
-                  <div className="text-[11px] sm:text-xs text-white/50 leading-snug">Liberação automática assim que o pagamento é confirmado.</div>
-                </div>
-                <span className="shrink-0 text-[10px] font-black tracking-wider rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-1">RECOMENDADO</span>
+
+              {/* Method tabs */}
+              <div className="grid grid-cols-2 gap-2 rounded-2xl bg-white/[0.03] border border-white/10 p-1">
+                <button
+                  type="button"
+                  onClick={() => setMethod("pix")}
+                  className={[
+                    "h-11 rounded-xl text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-all",
+                    method === "pix" ? "bg-[#5B3DF5]/90 text-white shadow-[0_4px_20px_-8px_rgba(91,61,245,0.6)]" : "text-white/70 hover:text-white",
+                  ].join(" ")}
+                >
+                  <PixIcon className="h-4 w-4" /> PIX
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMethod("card")}
+                  className={[
+                    "h-11 rounded-xl text-[12.5px] font-semibold inline-flex items-center justify-center gap-2 transition-all",
+                    method === "card" ? "bg-[#5B3DF5]/90 text-white shadow-[0_4px_20px_-8px_rgba(91,61,245,0.6)]" : "text-white/70 hover:text-white",
+                  ].join(" ")}
+                >
+                  <CreditCard className="h-4 w-4" /> Cartão
+                </button>
               </div>
 
-              {serverError && (
-                <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200">
-                  {serverError}
-                </div>
-              )}
+              {method === "pix" ? (
+                <>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                    <div className="h-10 w-10 rounded-xl grid place-items-center bg-white shrink-0">
+                      <PixIcon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold">PIX · Aprovação instantânea</div>
+                      <div className="text-[11px] sm:text-xs text-white/50 leading-snug">Liberação automática assim que o pagamento é confirmado.</div>
+                    </div>
+                    <span className="shrink-0 text-[10px] font-black tracking-wider rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 px-2 py-1">RECOMENDADO</span>
+                  </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
-              >
-                <PixIcon className="h-4 w-4" />
-                {submitting
-                  ? "Gerando Pix..."
-                  : lockedThisPlan
-                    ? "Abrir Pix em aberto"
-                    : locked
-                      ? "Pix ativo em outro plano"
-                      : `Pagar ${formatBRL(plan.price)} com Pix`}
-              </button>
+                  {serverError && (
+                    <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200">
+                      {serverError}
+                    </div>
+                  )}
 
-              {locked && (
-                <p className="text-center text-[11px] text-white/50">
-                  Campos bloqueados enquanto houver um Pix em aberto. Liberam automaticamente ao expirar.
-                </p>
+                  <button
+                    type="button"
+                    onClick={generatePix}
+                    disabled={submitting}
+                    className="mt-2 w-full h-12 rounded-xl text-[13px] font-semibold tracking-wide text-white bg-[#5B3DF5]/90 hover:bg-[#5B3DF5] border border-white/10 hover:border-white/15 shadow-[0_8px_24px_-12px_rgba(91,61,245,0.6)] hover:shadow-[0_10px_28px_-12px_rgba(91,61,245,0.7)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2.5"
+                  >
+                    <PixIcon className="h-4 w-4" />
+                    {submitting
+                      ? "Gerando Pix..."
+                      : lockedThisPlan
+                        ? "Abrir Pix em aberto"
+                        : locked
+                          ? "Pix ativo em outro plano"
+                          : `Pagar ${formatBRL(plan.price)} com Pix`}
+                  </button>
+
+                  {locked && (
+                    <p className="text-center text-[11px] text-white/50">
+                      Campos bloqueados enquanto houver um Pix em aberto. Liberam automaticamente ao expirar.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 sm:p-4 flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl grid place-items-center bg-white/[0.05] border border-white/10 shrink-0">
+                      <CreditCard className="h-5 w-5 text-[#A78BFA]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold">Cartão de crédito · à vista</div>
+                      <div className="text-[11px] sm:text-xs text-white/50 leading-snug">
+                        Inclui a taxa do cartão (4,98%). No PIX: {formatBRL(plan.price)}.
+                      </div>
+                    </div>
+                    <AcceptedBrands className="hidden sm:flex" />
+                  </div>
+
+                  {serverError && (
+                    <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-[12px] text-red-200">
+                      {serverError}
+                    </div>
+                  )}
+
+                  <CardForm
+                    cpf={form.cpf}
+                    submitting={submitting}
+                    disabled={locked}
+                    submitLabel={`Pagar ${formatBRL(cardAmount)} no cartão`}
+                    onTokenize={handleCardTokenized}
+                  />
+                </>
               )}
 
 
@@ -351,14 +430,15 @@ function CheckoutPage() {
                   <p className="text-left text-[13.5px] leading-[1.55] font-normal text-white/[0.6]">
                     Seu pagamento é protegido por criptografia.
                     <br />
-                    Após a confirmação do Pix, sua licença é liberada automaticamente.
+                    Após a confirmação, sua licença é liberada automaticamente.
                   </p>
                 </div>
               </div>
 
 
 
-            </form>
+
+            </div>
           </motion.section>
 
           {/* SUMMARY */}
@@ -420,6 +500,23 @@ function CheckoutPage() {
           charge={charge}
           onMinimize={() => setCharge(null)}
           onClose={() => { clearActiveCharge(); setCharge(null); }}
+        />
+      )}
+
+      {cardResult && (
+        <CardResultModal
+          buyer={{
+            planId: plan.id,
+            paymentId: cardResult.id,
+            customerName: form.name.trim(),
+            customerEmail: form.email.trim(),
+            customerPhone: onlyDigits(form.phone),
+            customerCpf: onlyDigits(form.cpf),
+          }}
+          amount={cardResult.amount}
+          status={cardResult.status}
+          statusDetail={cardResult.statusDetail}
+          onClose={() => setCardResult(null)}
         />
       )}
 
