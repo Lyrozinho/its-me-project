@@ -24,21 +24,19 @@ export function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-5 lg:px-8">
         <div className="grid h-16 items-center gap-4 grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr]">
-          <a href="/" className="flex items-center gap-2.5 shrink-0 justify-self-start group">
-            <span className="relative h-10 w-10 rounded-xl overflow-hidden ring-1 ring-white/10 shadow-[0_6px_20px_-8px_rgba(122,92,255,0.7)] transition-transform group-hover:scale-[1.04]">
-              <img
-                src="/assets/lovehyro-mark.jpg"
-                alt="Love Hyro"
-                width={40}
-                height={40}
-                loading="eager"
-                decoding="async"
-                className="absolute inset-0 h-full w-full object-cover"
-                draggable={false}
-              />
-              <span aria-hidden className="absolute inset-0 rounded-xl ring-1 ring-inset ring-[#A78BFA]/20" />
+          <a href="/" className="flex items-center gap-2.5 shrink-0 justify-self-start group" aria-label="HYRO LOVE">
+            <span
+              aria-hidden
+              className="relative h-9 w-9 grid place-items-center rounded-[10px] bg-gradient-to-br from-[#7A5CFF] via-[#5B3DF5] to-[#3A24B8] shadow-[0_8px_22px_-10px_rgba(122,92,255,0.85)] ring-1 ring-white/10 transition-transform group-hover:scale-[1.04]"
+            >
+              <svg viewBox="0 0 24 24" className="h-4 w-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="square" strokeLinejoin="miter">
+                <path d="M5 4v16M19 4v16M5 12h14" />
+              </svg>
+              <span className="pointer-events-none absolute inset-0 rounded-[10px] ring-1 ring-inset ring-white/15" />
             </span>
-            <span className="text-[15px] font-semibold tracking-tight">Love Hyro</span>
+            <span className="text-[15px] font-bold tracking-[0.14em] uppercase text-white">
+              HYRO<span className="text-white/60 font-semibold"> LOVE</span>
+            </span>
           </a>
 
           <nav className="hidden md:flex items-center gap-1 h-11 px-2 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-xl justify-self-center">
