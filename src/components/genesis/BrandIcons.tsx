@@ -1,12 +1,14 @@
-// Small badge component that renders real card brand logos from icons8 (same source as the PIX icon).
+// Real, color card brand badges (flat-rounded set) served via jsDelivr.
 import type { CardBrand } from "@/lib/card";
 
-const LOGOS: Record<Exclude<CardBrand, "unknown">, string> = {
-  visa: "https://img.icons8.com/color/48/visa.png",
-  mastercard: "https://img.icons8.com/color/48/mastercard-logo.png",
-  amex: "https://img.icons8.com/color/48/amex.png",
-  elo: "https://img.icons8.com/color/48/elo.png",
-  hipercard: "https://img.icons8.com/color/48/hipercard.png",
+const BASE = "https://cdn.jsdelivr.net/gh/aaronfagan/svg-credit-card-payment-icons@main/flat-rounded";
+
+const FILES: Record<Exclude<CardBrand, "unknown">, string> = {
+  visa: `${BASE}/visa.svg`,
+  mastercard: `${BASE}/mastercard.svg`,
+  amex: `${BASE}/amex.svg`,
+  elo: `${BASE}/elo.svg`,
+  hipercard: `${BASE}/hipercard.svg`,
 };
 
 const LABELS: Record<Exclude<CardBrand, "unknown">, string> = {
@@ -17,14 +19,12 @@ const LABELS: Record<Exclude<CardBrand, "unknown">, string> = {
   hipercard: "Hipercard",
 };
 
-export function BrandIcon({ brand, className = "h-5 w-8" }: { brand: CardBrand; className?: string }) {
+export function BrandIcon({ brand, className = "h-8 w-12" }: { brand: CardBrand; className?: string }) {
   if (brand === "unknown") return null;
   return (
     <img
-      src={LOGOS[brand]}
+      src={FILES[brand]}
       alt={LABELS[brand]}
-      width={36}
-      height={24}
       draggable={false}
       className={`${className} object-contain select-none`}
     />
@@ -32,18 +32,18 @@ export function BrandIcon({ brand, className = "h-5 w-8" }: { brand: CardBrand; 
 }
 
 export function AcceptedBrands({ className = "" }: { className?: string }) {
-  // Bandeiras aceitas pelo Mercado Pago (crédito) no Brasil.
   const list: Exclude<CardBrand, "unknown">[] = ["mastercard", "visa", "elo", "amex", "hipercard"];
   return (
-    <div className={`flex items-center gap-1.5 ${className}`}>
+    <div className={`flex items-center gap-2 ${className}`}>
       {list.map((b) => (
-        <div
+        <img
           key={b}
-          className="h-7 w-10 rounded-md bg-white/[0.06] ring-1 ring-white/10 backdrop-blur-sm grid place-items-center"
+          src={FILES[b]}
+          alt={LABELS[b]}
           title={LABELS[b]}
-        >
-          <BrandIcon brand={b} className="h-4 w-7" />
-        </div>
+          draggable={false}
+          className="h-8 w-[52px] object-contain select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+        />
       ))}
     </div>
   );
