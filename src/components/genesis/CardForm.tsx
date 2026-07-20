@@ -143,8 +143,8 @@ export function CardForm({
             className="input"
           />
           {brand !== "unknown" && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-9 rounded-md bg-white/[0.06] border border-white/10 grid place-items-center">
-              <BrandIcon brand={brand} className="h-3.5 w-6" />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-10 rounded-md bg-white ring-1 ring-black/5 grid place-items-center">
+              <BrandIcon brand={brand} className="h-4 w-7" />
             </div>
           )}
         </div>

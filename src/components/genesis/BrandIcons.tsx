@@ -32,15 +32,16 @@ export function BrandIcon({ brand, className = "h-5 w-8" }: { brand: CardBrand; 
 }
 
 export function AcceptedBrands({ className = "" }: { className?: string }) {
-  const list: Exclude<CardBrand, "unknown">[] = ["visa", "mastercard", "amex", "elo", "hipercard"];
+  // Order mirrors typical BR checkouts: Mastercard, Visa, Elo, Amex.
+  const list: Exclude<CardBrand, "unknown">[] = ["mastercard", "visa", "elo", "amex"];
   return (
     <div className={`flex items-center gap-1.5 ${className}`}>
       {list.map((b) => (
         <div
           key={b}
-          className="h-6 w-9 rounded-md bg-white/[0.06] border border-white/10 grid place-items-center"
+          className="h-7 w-10 rounded-md bg-white shadow-[0_1px_0_rgba(0,0,0,0.04)] ring-1 ring-black/5 grid place-items-center"
         >
-          <BrandIcon brand={b} className="h-3.5 w-6" />
+          <BrandIcon brand={b} className="h-4 w-7" />
         </div>
       ))}
     </div>

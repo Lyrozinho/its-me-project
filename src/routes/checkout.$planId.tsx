@@ -404,7 +404,11 @@ function CheckoutPage() {
                         Inclui a taxa do cartão (4,98%). No PIX: {formatBRL(plan.price)}.
                       </div>
                     </div>
-                    <AcceptedBrands className="hidden sm:flex" />
+                    <AcceptedBrands className="hidden md:flex shrink-0" />
+                  </div>
+                  <div className="md:hidden -mt-2 flex items-center justify-between gap-2 px-1">
+                    <span className="text-[11px] text-white/45">Bandeiras aceitas</span>
+                    <AcceptedBrands />
                   </div>
 
                   {serverError && (
