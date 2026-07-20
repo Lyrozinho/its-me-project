@@ -71,10 +71,10 @@ export function Navbar() {
           >
             <div className="grid gap-2">
               {[
-                { href: "#recursos", label: "Recursos" },
-                { href: "#planos", label: "Planos" },
-                { href: "#download", label: "Download" },
-                { href: "#faq", label: "FAQ" },
+                { href: "/#recursos", label: "Recursos" },
+                { href: "/#planos", label: "Planos" },
+                { href: "/download", label: "Download" },
+                { href: "/#faq", label: "FAQ" },
               ].map((l) => (
                 <a
                   key={l.href}
