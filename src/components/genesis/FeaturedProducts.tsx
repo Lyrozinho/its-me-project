@@ -2,10 +2,11 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Infinity as InfinityIcon, Zap, ShieldCheck, Clock, CheckCircle2 } from "lucide-react";
-import { TrialModal } from "./TrialModal";
 
 import { PLANS, type Plan, formatBRL } from "@/lib/plans";
 import { SectionHeader } from "./SectionHeader";
+
+
 
 
 const FEATURES = [
