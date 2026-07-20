@@ -148,11 +148,8 @@ function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
-  const submit = async (ev: React.FormEvent) => {
-    ev.preventDefault();
+  const generatePix = async () => {
     setServerError(null);
-
-    // 1) Reuse any active charge instead of creating a new one
     const active = getActiveCharge();
     if (active) {
       if (active.planId !== plan.id) {
@@ -169,17 +166,13 @@ function CheckoutPage() {
         customerEmail: active.customerEmail,
         planId: active.planId,
       });
-
       return;
     }
-
-    // 2) Anti-spam: minimum interval between creation attempts
     const now = Date.now();
     if (now - lastAttemptRef.current < 8000) {
       setServerError("Aguarde alguns segundos antes de tentar novamente.");
       return;
     }
-
     if (!validate()) return;
     lastAttemptRef.current = now;
     setSubmitting(true);
@@ -193,30 +186,49 @@ function CheckoutPage() {
         },
       });
       setCharge({ ...c, customerName: form.name.trim(), customerEmail: form.email.trim(), customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf), planId: plan.id });
-      // Persist so mini card / refresh / accidental close keeps the Pix alive
       const remoteExpiry = c.expiresAt ? new Date(c.expiresAt).getTime() : NaN;
       const expiresAt = Number.isFinite(remoteExpiry) && remoteExpiry > Date.now()
         ? remoteExpiry
         : Date.now() + 5 * 60 * 1000;
       saveActiveCharge({
-        planId: plan.id,
-        planTitle: plan.title,
-        id: c.id,
-        qrCodeBase64: c.qrCodeBase64,
-        qrCodeText: c.qrCodeText,
-        expiresAt,
-        amount: c.amount,
-        createdAt: Date.now(),
-        status: "pending",
-        customerName: form.name.trim(),
-        customerEmail: form.email.trim(),
-        customerPhone: onlyDigits(form.phone),
-        customerCpf: onlyDigits(form.cpf),
+        planId: plan.id, planTitle: plan.title, id: c.id,
+        qrCodeBase64: c.qrCodeBase64, qrCodeText: c.qrCodeText,
+        expiresAt, amount: c.amount, createdAt: Date.now(), status: "pending",
+        customerName: form.name.trim(), customerEmail: form.email.trim(),
+        customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf),
       });
-
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha ao gerar Pix. Tente novamente.";
       setServerError(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCardTokenized = async (card: TokenizedCard) => {
+    setServerError(null);
+    if (!validate()) {
+      setServerError("Preencha seus dados corretamente antes de pagar.");
+      throw new Error("dados incompletos");
+    }
+    setSubmitting(true);
+    try {
+      const res = await createCardPayment({
+        data: {
+          planId: plan.id,
+          token: card.token,
+          paymentMethodId: card.paymentMethodId,
+          issuerId: card.issuerId ?? null,
+          customerName: form.name.trim(),
+          customerEmail: form.email.trim(),
+          customerDocument: onlyDigits(form.cpf),
+        },
+      });
+      setCardResult(res);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Falha no cartão. Verifique os dados.";
+      setServerError(msg);
+      throw err;
     } finally {
       setSubmitting(false);
     }
