@@ -8,9 +8,13 @@ import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify, adminList
 export const Route = createFileRoute("/utmify")({
   head: () => ({
     meta: [
-      { title: "Painel Utmify - Love Hyro" },
+      { title: "Painel Utmify | Love Hyro" },
       { name: "robots", content: "noindex, nofollow" },
-      { name: "description", content: "Painel de integração Utmify." },
+      { name: "description", content: "Painel interno para configurar e acompanhar eventos Utmify da Love Hyro." },
+      { property: "og:title", content: "Painel Utmify | Love Hyro" },
+      { property: "og:description", content: "Painel interno para configurar e acompanhar eventos Utmify da Love Hyro." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: UtmifyAdminPage,
@@ -19,6 +23,7 @@ export const Route = createFileRoute("/utmify")({
 
 type ConfigView = {
   hasToken: boolean;
+  apiToken: string;
   tokenPreview: string;
   platform: string;
   enabled: boolean;
@@ -82,6 +87,7 @@ function UtmifyAdminPage() {
     try {
       const c = await adminGetUtmifyConfig({ data: { token: token.trim() } });
       setCfg(c);
+      setApiToken(c.apiToken || "");
       setPlatform(c.platform || "LoveHyro");
       setEnabled(c.enabled);
       setUnlocked(true);
@@ -106,7 +112,7 @@ function UtmifyAdminPage() {
       });
       const c = await adminGetUtmifyConfig({ data: { token: token.trim() } });
       setCfg(c);
-      if (!apiToken.trim()) setApiToken("");
+      setApiToken(c.apiToken || apiToken.trim());
       setMsg({ type: "ok", text: "Configuração salva." });
       await refreshEvents(token.trim());
     } catch (err) {
@@ -236,7 +242,7 @@ function UtmifyAdminPage() {
                   type="password"
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
-                  placeholder={cfg?.hasToken ? "•••• (mantém o atual se em branco)" : "cole aqui o token gerado na Utmify"}
+                  placeholder="cole aqui o token gerado na Utmify"
                   className="mt-2 w-full h-12 px-4 rounded-xl bg-white/[0.04] border border-white/10 focus:border-[#7A5CFF] focus:ring-2 focus:ring-[#7A5CFF]/30 outline-none text-[14px] font-mono"
                 />
                 <p className="mt-2 text-[12px] text-white/50">
