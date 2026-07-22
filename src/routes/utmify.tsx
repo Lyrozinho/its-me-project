@@ -8,9 +8,13 @@ import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify, adminList
 export const Route = createFileRoute("/utmify")({
   head: () => ({
     meta: [
-      { title: "Painel Utmify - Love Hyro" },
+      { title: "Painel Utmify | Love Hyro" },
       { name: "robots", content: "noindex, nofollow" },
-      { name: "description", content: "Painel de integração Utmify." },
+      { name: "description", content: "Painel interno para configurar e acompanhar eventos Utmify da Love Hyro." },
+      { property: "og:title", content: "Painel Utmify | Love Hyro" },
+      { property: "og:description", content: "Painel interno para configurar e acompanhar eventos Utmify da Love Hyro." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: UtmifyAdminPage,
