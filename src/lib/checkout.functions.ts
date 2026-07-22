@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getPlanById } from "./plans";
+import type { UtmifyTracking } from "./utmify.server";
 
 function onlyDigits(v: string) { return v.replace(/\D+/g, ""); }
 function validCPF(cpf: string) {
@@ -19,6 +20,8 @@ export type CreatePixInput = {
   customerName: string;
   customerEmail: string;
   customerDocument: string;
+  customerPhone?: string;
+  tracking?: UtmifyTracking | null;
 };
 
 export const createPixCharge = createServerFn({ method: "POST" })
@@ -43,7 +46,33 @@ export const createPixCharge = createServerFn({ method: "POST" })
       customerName: data.customerName.trim(),
       customerDocument: data.customerDocument.replace(/\D/g, ""),
     });
-    return { ...charge, amount: plan.price };
+
+    // Fire-and-forget Utmify (waiting_payment). Never break checkout if it fails.
+    const createdAt = new Date().toISOString();
+    try {
+      const { sendUtmifyOrder } = await import("./utmify.server");
+      await sendUtmifyOrder({
+        orderId: charge.id || `HYRO-${Date.now()}`,
+        paymentMethod: "pix",
+        status: "waiting_payment",
+        createdAt,
+        approvedAt: null,
+        customer: {
+          name: data.customerName.trim(),
+          email: data.customerEmail.trim().toLowerCase(),
+          phone: onlyDigits(data.customerPhone || "") || null,
+          document: onlyDigits(data.customerDocument),
+        },
+        product: { id: plan.id, name: `Love Hyro ${plan.duration}`, priceInCents: amountCents },
+        totalPriceInCents: amountCents,
+        gatewayFeeInCents: 0,
+        tracking: data.tracking ?? null,
+      });
+    } catch (e) {
+      console.error("[utmify:pix-created]", e);
+    }
+
+    return { ...charge, amount: plan.price, createdAt };
   });
 
 export const getPixStatus = createServerFn({ method: "GET" })
