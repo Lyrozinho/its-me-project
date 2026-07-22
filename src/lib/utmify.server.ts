@@ -1,0 +1,153 @@
+// Utmify integration — outgoing order webhooks.
+// Server-only. Config lives in the external Hyro Supabase (hyro_utmify_config table).
+import { getHyroDb } from "./hyro-db.server";
+
+export type UtmifyConfig = {
+  api_token: string;
+  platform: string;
+  enabled: boolean;
+  updated_at?: string | null;
+};
+
+export async function getUtmifyConfigRow(): Promise<UtmifyConfig> {
+  try {
+    const db = getHyroDb();
+    const { data } = await db
+      .from("hyro_utmify_config")
+      .select("api_token,platform,enabled,updated_at")
+      .eq("id", 1)
+      .maybeSingle();
+    return {
+      api_token: String(data?.api_token ?? ""),
+      platform: String(data?.platform ?? "LoveHyro"),
+      enabled: data?.enabled !== false,
+      updated_at: data?.updated_at ?? null,
+    };
+  } catch {
+    return { api_token: "", platform: "LoveHyro", enabled: false, updated_at: null };
+  }
+}
+
+export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
+  const db = getHyroDb();
+  const { error } = await db.from("hyro_utmify_config").upsert({
+    id: 1,
+    api_token: c.api_token || "",
+    platform: c.platform || "LoveHyro",
+    enabled: !!c.enabled,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(error.message);
+}
+
+function toUtcSql(iso: string): string {
+  const d = new Date(iso);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
+}
+
+export type UtmifyTracking = {
+  src?: string | null;
+  sck?: string | null;
+  utm_source?: string | null;
+  utm_campaign?: string | null;
+  utm_medium?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+};
+
+export type UtmifyOrderInput = {
+  orderId: string;
+  paymentMethod: "pix" | "credit_card";
+  status: "waiting_payment" | "paid" | "refused" | "refunded" | "chargedback";
+  createdAt: string; // ISO
+  approvedAt?: string | null;
+  customer: {
+    name: string;
+    email: string;
+    phone?: string | null;
+    document?: string | null;
+    ip?: string | null;
+  };
+  product: { id: string; name: string; priceInCents: number };
+  totalPriceInCents: number;
+  gatewayFeeInCents?: number;
+  tracking?: UtmifyTracking | null;
+  isTest?: boolean;
+};
+
+export async function sendUtmifyOrder(
+  input: UtmifyOrderInput,
+): Promise<{ ok: boolean; status?: number; message?: string }> {
+  const cfg = await getUtmifyConfigRow();
+  if (!cfg.enabled) return { ok: false, message: "utmify disabled" };
+  if (!cfg.api_token) return { ok: false, message: "utmify token not set" };
+
+  const gatewayFee = Math.max(0, Math.floor(input.gatewayFeeInCents ?? 0));
+  const total = Math.max(0, Math.floor(input.totalPriceInCents));
+  const commission = Math.max(1, total - gatewayFee);
+
+  const body = {
+    orderId: input.orderId,
+    platform: cfg.platform || "LoveHyro",
+    paymentMethod: input.paymentMethod,
+    status: input.status,
+    createdAt: toUtcSql(input.createdAt),
+    approvedDate: input.approvedAt ? toUtcSql(input.approvedAt) : null,
+    refundedAt: null,
+    customer: {
+      name: input.customer.name,
+      email: input.customer.email,
+      phone: input.customer.phone || null,
+      document: input.customer.document || null,
+      country: "BR",
+      ip: input.customer.ip || null,
+    },
+    products: [
+      {
+        id: input.product.id,
+        name: input.product.name,
+        planId: null,
+        planName: null,
+        quantity: 1,
+        priceInCents: input.product.priceInCents,
+      },
+    ],
+    trackingParameters: {
+      src: input.tracking?.src ?? null,
+      sck: input.tracking?.sck ?? null,
+      utm_source: input.tracking?.utm_source ?? null,
+      utm_campaign: input.tracking?.utm_campaign ?? null,
+      utm_medium: input.tracking?.utm_medium ?? null,
+      utm_content: input.tracking?.utm_content ?? null,
+      utm_term: input.tracking?.utm_term ?? null,
+    },
+    commission: {
+      totalPriceInCents: total,
+      gatewayFeeInCents: gatewayFee,
+      userCommissionInCents: commission,
+    },
+    isTest: !!input.isTest,
+  };
+
+  try {
+    const r = await fetch("https://api.utmify.com.br/api-credentials/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "x-api-token": cfg.api_token,
+      },
+      body: JSON.stringify(body),
+    });
+    const t = await r.text();
+    if (r.status < 200 || r.status >= 300) {
+      console.error("[utmify]", r.status, t.slice(0, 400));
+      return { ok: false, status: r.status, message: t.slice(0, 400) };
+    }
+    return { ok: true, status: r.status };
+  } catch (e) {
+    console.error("[utmify:err]", e);
+    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+  }
+}
