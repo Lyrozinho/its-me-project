@@ -177,24 +177,83 @@ export async function sendUtmifyOrder(
     isTest: !!input.isTest,
   };
 
-  try {
-    const r = await fetch("https://api.utmify.com.br/api-credentials/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "x-api-token": cfg.api_token,
-      },
-      body: JSON.stringify(body),
-    });
-    const t = await r.text();
-    if (r.status < 200 || r.status >= 300) {
-      console.error("[utmify]", r.status, t.slice(0, 400));
-      return { ok: false, status: r.status, message: t.slice(0, 400) };
+  const attempt = async (): Promise<{ ok: boolean; status?: number; message?: string }> => {
+    try {
+      const r = await fetch("https://api.utmify.com.br/api-credentials/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "x-api-token": cfg.api_token,
+        },
+        body: JSON.stringify(body),
+      });
+      const t = await r.text();
+      if (r.status < 200 || r.status >= 300) {
+        console.error("[utmify]", r.status, t.slice(0, 400));
+        return { ok: false, status: r.status, message: t.slice(0, 400) };
+      }
+      return { ok: true, status: r.status };
+    } catch (e) {
+      console.error("[utmify:err]", e);
+      return { ok: false, message: e instanceof Error ? e.message : String(e) };
     }
-    return { ok: true, status: r.status };
+  };
+
+  const result = await attempt();
+
+  // Best-effort event log to display in the admin panel.
+  try {
+    const { configured } = getHyroDbConfig();
+    if (configured) {
+      const db = getHyroDb();
+      await db.from("hyro_utmify_log").insert({
+        order_id: input.orderId,
+        status: input.status,
+        payment_method: input.paymentMethod,
+        amount_cents: input.totalPriceInCents,
+        customer_email: input.customer.email,
+        ok: result.ok,
+        http_status: result.status ?? null,
+        error_message: result.ok ? null : (result.message ?? null),
+        is_test: !!input.isTest,
+      });
+    }
   } catch (e) {
-    console.error("[utmify:err]", e);
-    return { ok: false, message: e instanceof Error ? e.message : String(e) };
+    // ignore log failures — table may not exist yet
+    console.error("[utmify:log]", e instanceof Error ? e.message : String(e));
+  }
+
+  return result;
+}
+
+export type UtmifyLogRow = {
+  id: number;
+  created_at: string;
+  order_id: string;
+  status: string;
+  payment_method: string;
+  amount_cents: number;
+  customer_email: string;
+  ok: boolean;
+  http_status: number | null;
+  error_message: string | null;
+  is_test: boolean;
+};
+
+export async function listUtmifyLog(limit = 25): Promise<UtmifyLogRow[]> {
+  const { configured } = getHyroDbConfig();
+  if (!configured) return [];
+  try {
+    const db = getHyroDb();
+    const { data, error } = await db
+      .from("hyro_utmify_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data ?? []) as UtmifyLogRow[];
+  } catch {
+    return [];
   }
 }
