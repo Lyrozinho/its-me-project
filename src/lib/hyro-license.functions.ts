@@ -41,8 +41,8 @@ export const issueLicense = createServerFn({ method: "POST" })
     const provider = data.provider ?? "pix";
     let normalized: string;
     if (provider === "card") {
-      const { getCardPaymentStatus } = await import("./mercadopago.functions");
-      const { status } = await getCardPaymentStatus({ data: { id: data.paymentId } });
+      const { getCardPaymentStatusServer } = await import("./mercadopago.server");
+      const { status } = await getCardPaymentStatusServer(data.paymentId);
       normalized = status.toLowerCase();
     } else {
       const { checkPixStatus } = await import("./vexopay.server");
