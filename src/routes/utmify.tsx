@@ -106,8 +106,9 @@ function UtmifyAdminPage() {
       });
       const c = await adminGetUtmifyConfig({ data: { token: token.trim() } });
       setCfg(c);
-      setApiToken("");
+      if (!apiToken.trim()) setApiToken("");
       setMsg({ type: "ok", text: "Configuração salva." });
+      await refreshEvents(token.trim());
     } catch (err) {
       const t = err instanceof Error ? err.message : "Falha ao salvar";
       const hint = /relation.*does not exist|not found|schema cache|hyro_utmify_config/i.test(t)
@@ -126,6 +127,7 @@ function UtmifyAdminPage() {
       const r = await adminTestUtmify({ data: { token: token.trim() } });
       if (r.ok) setMsg({ type: "ok", text: `Envio de teste OK (HTTP ${r.status ?? 200}).` });
       else setMsg({ type: "err", text: `Falhou: ${r.message ?? "erro desconhecido"}` });
+      await refreshEvents(token.trim());
     } catch (err) {
       setMsg({ type: "err", text: err instanceof Error ? err.message : "Falha no teste" });
     } finally {
