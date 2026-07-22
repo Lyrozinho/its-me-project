@@ -1,27 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 
-// Fixed admin token as requested by the operator.
-const ADMIN_TOKEN = "santiago";
-
-function assertToken(token: string) {
-  if (!token || token !== ADMIN_TOKEN) throw new Error("Acesso negado");
-}
-
 export const adminGetUtmifyConfig = createServerFn({ method: "POST" })
   .inputValidator((d: { token: string }) => {
     if (!d?.token) throw new Error("Token obrigatório");
     return d;
   })
   .handler(async ({ data }) => {
-    assertToken(data.token);
+    const { assertUtmifyAdminToken } = await import("./utmify-admin.server");
+    assertUtmifyAdminToken(data.token);
     const { getUtmifyConfigRow } = await import("./utmify.server");
     const cfg = await getUtmifyConfigRow();
-    // Never leak the full token to the client; return a masked preview.
     const masked = cfg.api_token
       ? `${cfg.api_token.slice(0, 4)}••••${cfg.api_token.slice(-4)}`
       : "";
     return {
       hasToken: !!cfg.api_token,
+      apiToken: cfg.api_token,
       tokenPreview: masked,
       platform: cfg.platform,
       enabled: cfg.enabled,
@@ -40,12 +34,14 @@ export const adminSaveUtmifyConfig = createServerFn({ method: "POST" })
     return d;
   })
   .handler(async ({ data }) => {
-    assertToken(data.token);
+    const { assertUtmifyAdminToken } = await import("./utmify-admin.server");
+    assertUtmifyAdminToken(data.token);
     const { getUtmifyConfigRow, saveUtmifyConfigRow } = await import("./utmify.server");
     const current = await getUtmifyConfigRow();
+    const nextToken = data.api_token?.trim() || current.api_token;
+    if (!nextToken) throw new Error("Cole o token da Utmify antes de salvar.");
     await saveUtmifyConfigRow({
-      // Only replace token when a non-empty value is sent — allows saving other fields without exposing token.
-      api_token: (data.api_token && data.api_token.trim()) ? data.api_token.trim() : current.api_token,
+      api_token: nextToken,
       platform: data.platform?.trim() || current.platform || "LoveHyro",
       enabled: typeof data.enabled === "boolean" ? data.enabled : current.enabled,
     });
@@ -58,7 +54,8 @@ export const adminTestUtmify = createServerFn({ method: "POST" })
     return d;
   })
   .handler(async ({ data }) => {
-    assertToken(data.token);
+    const { assertUtmifyAdminToken } = await import("./utmify-admin.server");
+    assertUtmifyAdminToken(data.token);
     const { sendUtmifyOrder } = await import("./utmify.server");
     const now = new Date().toISOString();
     const res = await sendUtmifyOrder({
@@ -87,7 +84,8 @@ export const adminListUtmifyEvents = createServerFn({ method: "POST" })
     return d;
   })
   .handler(async ({ data }) => {
-    assertToken(data.token);
+    const { assertUtmifyAdminToken } = await import("./utmify-admin.server");
+    assertUtmifyAdminToken(data.token);
     const { listUtmifyLog } = await import("./utmify.server");
     const rows = await listUtmifyLog(30);
     return { events: rows };

@@ -69,6 +69,9 @@ export async function getUtmifyConfigRow(): Promise<UtmifyConfig> {
 
 
 export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
+  const nextToken = c.api_token?.trim();
+  if (!nextToken) throw new Error("Token Utmify obrigatório");
+
   const { configured } = getHyroDbConfig();
   if (!configured) {
     // The production flow can still use UTMIFY_API_TOKEN from encrypted secrets.
@@ -79,7 +82,7 @@ export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
   const db = getHyroDb();
   const { error } = await db.from("hyro_utmify_config").upsert({
     id: 1,
-    api_token: c.api_token || "",
+    api_token: nextToken,
     platform: c.platform || "LoveHyro",
     enabled: !!c.enabled,
     updated_at: new Date().toISOString(),
