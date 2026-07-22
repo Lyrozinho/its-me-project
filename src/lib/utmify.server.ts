@@ -148,7 +148,9 @@ export async function sendUtmifyOrder(
       phone: input.customer.phone || null,
       document: input.customer.document || null,
       country: "BR",
-      ip: input.customer.ip || null,
+      // Utmify recusa customer.ip null com SCHEMA_VALIDATION_FAILED.
+      // Sempre enviar um IP válido (usa o real quando disponível).
+      ip: (input.customer.ip && input.customer.ip.trim()) || "0.0.0.0",
     },
     products: [
       {
