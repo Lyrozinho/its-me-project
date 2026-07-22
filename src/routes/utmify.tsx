@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle, Copy, Info } from "lucide-react";
+import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify } from "@/lib/utmify.functions";
 
