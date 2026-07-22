@@ -118,7 +118,10 @@ function CheckoutPage() {
         amount: stored.amount,
         customerName: stored.customerName,
         customerEmail: stored.customerEmail,
+        customerPhone: stored.customerPhone,
+        customerCpf: stored.customerCpf,
         planId: stored.planId,
+        createdAt: stored.createdAt,
       });
 
     };
@@ -164,7 +167,10 @@ function CheckoutPage() {
         amount: active.amount,
         customerName: active.customerName,
         customerEmail: active.customerEmail,
+        customerPhone: active.customerPhone,
+        customerCpf: active.customerCpf,
         planId: active.planId,
+        createdAt: active.createdAt,
       });
       return;
     }
