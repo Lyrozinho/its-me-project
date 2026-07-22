@@ -95,15 +95,6 @@ function UtmifyAdminPage() {
     }
   };
 
-  const copySql = async () => {
-    try {
-      await navigator.clipboard.writeText(SQL_SETUP);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* ignore */
-    }
-  };
 
   return (
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
