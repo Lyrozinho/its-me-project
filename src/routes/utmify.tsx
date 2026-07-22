@@ -24,20 +24,6 @@ type ConfigView = {
   updatedAt: string | null;
 };
 
-const SQL_SETUP = `create table if not exists public.hyro_utmify_config (
-  id int primary key,
-  api_token text default '',
-  platform text default 'LoveHyro',
-  enabled boolean default true,
-  updated_at timestamptz default now()
-);
-
-grant select, insert, update on public.hyro_utmify_config to anon;
-grant select, insert, update on public.hyro_utmify_config to authenticated;
-
-insert into public.hyro_utmify_config (id, api_token, platform, enabled)
-values (1, '', 'LoveHyro', true)
-on conflict (id) do nothing;`;
 
 function UtmifyAdminPage() {
   const [token, setToken] = useState("");
