@@ -36,8 +36,27 @@ export async function getUtmifyConfigRow(): Promise<UtmifyConfig> {
       return fallback;
     }
 
+    const rowToken = String(data?.api_token || "").trim();
+    const finalToken = rowToken || fallback.api_token;
+
+    // Auto-heal: if the DB row is missing/empty but env has a token, persist it
+    // so the panel reflects an "Ativo" state on next load.
+    if (!rowToken && fallback.api_token) {
+      try {
+        await db.from("hyro_utmify_config").upsert({
+          id: 1,
+          api_token: fallback.api_token,
+          platform: data?.platform || fallback.platform,
+          enabled: data?.enabled ?? fallback.enabled,
+          updated_at: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error("[utmify:autoheal]", e instanceof Error ? e.message : String(e));
+      }
+    }
+
     return {
-      api_token: String(data?.api_token || fallback.api_token),
+      api_token: finalToken,
       platform: String(data?.platform || fallback.platform),
       enabled: data?.enabled ?? fallback.enabled,
       updated_at: data?.updated_at ?? null,
@@ -47,6 +66,7 @@ export async function getUtmifyConfigRow(): Promise<UtmifyConfig> {
     return fallback;
   }
 }
+
 
 export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
   const { configured } = getHyroDbConfig();
