@@ -26,6 +26,20 @@ type ConfigView = {
 };
 
 
+type UtmifyEvent = {
+  id: number;
+  created_at: string;
+  order_id: string;
+  status: string;
+  payment_method: string;
+  amount_cents: number;
+  customer_email: string;
+  ok: boolean;
+  http_status: number | null;
+  error_message: string | null;
+  is_test: boolean;
+};
+
 function UtmifyAdminPage() {
   const [token, setToken] = useState("");
   const [unlocked, setUnlocked] = useState(false);
@@ -36,6 +50,29 @@ function UtmifyAdminPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [testing, setTesting] = useState(false);
+  const [events, setEvents] = useState<UtmifyEvent[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+
+  const refreshEvents = useCallback(async (tk: string) => {
+    setLoadingEvents(true);
+    try {
+      const r = await adminListUtmifyEvents({ data: { token: tk } });
+      setEvents(r.events as UtmifyEvent[]);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!unlocked) return;
+    refreshEvents(token.trim());
+    const id = setInterval(() => refreshEvents(token.trim()), 15000);
+    return () => clearInterval(id);
+  }, [unlocked, token, refreshEvents]);
+
+
   
 
   const unlock = async (e: React.FormEvent) => {
