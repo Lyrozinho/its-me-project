@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX, Maximize2, PlayCircle, CheckCircle2, Rocket } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 
-const TUTORIAL_COVER = "/assets/tutorial-cover.png";
+const TUTORIAL_COVER = "/assets/tutorial-cover.webp";
 
 const VIDEO_SRC = "/assets/tutorial.mp4";
 

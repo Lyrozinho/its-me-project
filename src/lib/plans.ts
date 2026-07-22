@@ -1,8 +1,8 @@
-const LOVE_HYRO_1H = "/assets/love-hyro-1h.png";
-const LOVE_HYRO_1D = "/assets/love-hyro-1d.png";
-const LOVE_HYRO_7D = "/assets/love-hyro-7d.png";
-const LOVE_HYRO_15D = "/assets/love-hyro-15d.png";
-const LOVE_HYRO_30D = "/assets/love-hyro-30d.png";
+const LOVE_HYRO_1H = "/assets/love-hyro-1h.webp";
+const LOVE_HYRO_1D = "/assets/love-hyro-1d.webp";
+const LOVE_HYRO_7D = "/assets/love-hyro-7d.webp";
+const LOVE_HYRO_15D = "/assets/love-hyro-15d.webp";
+const LOVE_HYRO_30D = "/assets/love-hyro-30d.webp";
 
 export type Plan = {
   id: string;
