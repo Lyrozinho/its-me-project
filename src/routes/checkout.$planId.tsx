@@ -96,6 +96,7 @@ function CheckoutPage() {
     customerPhone?: string;
     customerCpf?: string;
     planId?: string;
+    createdAt?: string | number;
   }>(null);
   const [cardResult, setCardResult] = useState<null | { id: string; status: string; statusDetail: string; amount: number }>(null);
 
