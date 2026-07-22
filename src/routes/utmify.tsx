@@ -275,27 +275,6 @@ function UtmifyAdminPage() {
                 Endpoint destino: <code className="text-white/70">POST https://api.utmify.com.br/api-credentials/orders</code>
               </p>
             </section>
-
-            {/* Setup DB */}
-            <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5 sm:p-7">
-              <div className="flex items-center gap-2 mb-2">
-                <Info className="h-4 w-4 text-[#A78BFA]" />
-                <h2 className="text-[15px] font-semibold">Setup inicial (executar 1 vez no Supabase Hyro)</h2>
-              </div>
-              <p className="text-[12px] text-white/55 mb-3">
-                Cole este SQL em <b>SQL Editor</b> se aparecer erro de tabela inexistente ao salvar.
-              </p>
-              <pre className="rounded-xl bg-black/40 border border-white/10 p-4 text-[11px] leading-relaxed overflow-x-auto text-white/85 font-mono">
-{SQL_SETUP}
-              </pre>
-              <button
-                type="button"
-                onClick={copySql}
-                className="mt-3 h-9 px-4 rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-[12px] font-semibold inline-flex items-center gap-2 transition-colors"
-              >
-                <Copy className="h-3.5 w-3.5" /> {copied ? "Copiado!" : "Copiar SQL"}
-              </button>
-            </section>
           </motion.div>
         )}
       </main>
