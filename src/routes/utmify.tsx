@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle, Copy, Info } from "lucide-react";
+import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
 import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify } from "@/lib/utmify.functions";
 
@@ -24,20 +24,6 @@ type ConfigView = {
   updatedAt: string | null;
 };
 
-const SQL_SETUP = `create table if not exists public.hyro_utmify_config (
-  id int primary key,
-  api_token text default '',
-  platform text default 'LoveHyro',
-  enabled boolean default true,
-  updated_at timestamptz default now()
-);
-
-grant select, insert, update on public.hyro_utmify_config to anon;
-grant select, insert, update on public.hyro_utmify_config to authenticated;
-
-insert into public.hyro_utmify_config (id, api_token, platform, enabled)
-values (1, '', 'LoveHyro', true)
-on conflict (id) do nothing;`;
 
 function UtmifyAdminPage() {
   const [token, setToken] = useState("");
@@ -49,7 +35,7 @@ function UtmifyAdminPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [testing, setTesting] = useState(false);
-  const [copied, setCopied] = useState(false);
+  
 
   const unlock = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,15 +95,6 @@ function UtmifyAdminPage() {
     }
   };
 
-  const copySql = async () => {
-    try {
-      await navigator.clipboard.writeText(SQL_SETUP);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* ignore */
-    }
-  };
 
   return (
     <div className="dark relative min-h-screen text-white overflow-x-hidden">
@@ -297,27 +274,6 @@ function UtmifyAdminPage() {
               <p className="mt-4 text-[12px] text-white/45">
                 Endpoint destino: <code className="text-white/70">POST https://api.utmify.com.br/api-credentials/orders</code>
               </p>
-            </section>
-
-            {/* Setup DB */}
-            <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5 sm:p-7">
-              <div className="flex items-center gap-2 mb-2">
-                <Info className="h-4 w-4 text-[#A78BFA]" />
-                <h2 className="text-[15px] font-semibold">Setup inicial (executar 1 vez no Supabase Hyro)</h2>
-              </div>
-              <p className="text-[12px] text-white/55 mb-3">
-                Cole este SQL em <b>SQL Editor</b> se aparecer erro de tabela inexistente ao salvar.
-              </p>
-              <pre className="rounded-xl bg-black/40 border border-white/10 p-4 text-[11px] leading-relaxed overflow-x-auto text-white/85 font-mono">
-{SQL_SETUP}
-              </pre>
-              <button
-                type="button"
-                onClick={copySql}
-                className="mt-3 h-9 px-4 rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-[12px] font-semibold inline-flex items-center gap-2 transition-colors"
-              >
-                <Copy className="h-3.5 w-3.5" /> {copied ? "Copiado!" : "Copiar SQL"}
-              </button>
             </section>
           </motion.div>
         )}
