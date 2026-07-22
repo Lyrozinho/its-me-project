@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const HERO_VISUAL = "/assets/hero-visual.png";
+const HERO_VISUAL = "/assets/hero-visual.webp";
 
 export function DashboardMock() {
   return (

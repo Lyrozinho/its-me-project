@@ -101,17 +101,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: "https://www.lovehyro.store/" },
-      { rel: "preload", as: "image", href: "/assets/hero-visual.png" },
-      { rel: "preload", as: "image", href: "/assets/love-hyro-1h.png" },
-      { rel: "prefetch", as: "image", href: "/assets/love-hyro-1d.png" },
-      { rel: "prefetch", as: "image", href: "/assets/love-hyro-3d.png" },
-      { rel: "prefetch", as: "image", href: "/assets/love-hyro-7d.png" },
-      { rel: "prefetch", as: "image", href: "/assets/love-hyro-15d.png" },
-      { rel: "prefetch", as: "image", href: "/assets/love-hyro-30d.png" },
-      { rel: "prefetch", as: "image", href: "/assets/tutorial-cover.png" },
+      { rel: "preload", as: "image", href: "/assets/hero-visual.webp", fetchpriority: "high" } as any,
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" },
+
     ],
     scripts: [
       {
