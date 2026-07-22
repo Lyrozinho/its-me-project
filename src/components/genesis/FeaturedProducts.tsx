@@ -125,7 +125,7 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
             <motion.img
               src={plan.image}
               alt={plan.title}
-              loading="eager"
+              loading="lazy"
               decoding="async"
               className="absolute inset-0 h-full w-full object-cover will-change-transform"
               initial={{ scale: 1 }}
