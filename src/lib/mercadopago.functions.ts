@@ -1,7 +1,17 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createCardPaymentServer, getCardPaymentStatusServer, validCPF } from "./mercadopago.server";
 
 function onlyDigits(v: string) { return (v || "").replace(/\D+/g, ""); }
+function validCPF(cpf: string) {
+  const d = onlyDigits(cpf);
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const calc = (base: number) => {
+    let sum = 0;
+    for (let i = 0; i < base; i++) sum += parseInt(d[i]) * (base + 1 - i);
+    const r = (sum * 10) % 11;
+    return r === 10 ? 0 : r;
+  };
+  return calc(9) === parseInt(d[9]) && calc(10) === parseInt(d[10]);
+}
 
 export type CreateCardPaymentInput = {
   planId: string;
@@ -32,6 +42,7 @@ export const createCardPayment = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data }): Promise<CreateCardPaymentResult> => {
+    const { createCardPaymentServer } = await import("./mercadopago.server");
     return createCardPaymentServer(data);
   });
 
@@ -41,5 +52,6 @@ export const getCardPaymentStatus = createServerFn({ method: "GET" })
     return data;
   })
   .handler(async ({ data }) => {
+    const { getCardPaymentStatusServer } = await import("./mercadopago.server");
     return getCardPaymentStatusServer(data.id);
   });
