@@ -96,6 +96,7 @@ function CheckoutPage() {
     customerPhone?: string;
     customerCpf?: string;
     planId?: string;
+    createdAt?: string | number;
   }>(null);
   const [cardResult, setCardResult] = useState<null | { id: string; status: string; statusDetail: string; amount: number }>(null);
 
@@ -118,7 +119,10 @@ function CheckoutPage() {
         amount: stored.amount,
         customerName: stored.customerName,
         customerEmail: stored.customerEmail,
+        customerPhone: stored.customerPhone,
+        customerCpf: stored.customerCpf,
         planId: stored.planId,
+        createdAt: stored.createdAt,
       });
 
     };
@@ -164,7 +168,10 @@ function CheckoutPage() {
         amount: active.amount,
         customerName: active.customerName,
         customerEmail: active.customerEmail,
+        customerPhone: active.customerPhone,
+        customerCpf: active.customerCpf,
         planId: active.planId,
+        createdAt: active.createdAt,
       });
       return;
     }
@@ -177,12 +184,15 @@ function CheckoutPage() {
     lastAttemptRef.current = now;
     setSubmitting(true);
     try {
+      const { getUtms } = await import("@/lib/utm-tracker");
       const c = await createPixCharge({
         data: {
           planId: plan.id,
           customerName: form.name.trim(),
           customerEmail: form.email.trim(),
           customerDocument: onlyDigits(form.cpf),
+          customerPhone: onlyDigits(form.phone),
+          tracking: getUtms(),
         },
       });
       setCharge({ ...c, customerName: form.name.trim(), customerEmail: form.email.trim(), customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf), planId: plan.id });
@@ -190,10 +200,13 @@ function CheckoutPage() {
       const expiresAt = Number.isFinite(remoteExpiry) && remoteExpiry > Date.now()
         ? remoteExpiry
         : Date.now() + 5 * 60 * 1000;
+      const serverCreatedMs = c.createdAt ? new Date(c.createdAt).getTime() : Date.now();
       saveActiveCharge({
         planId: plan.id, planTitle: plan.title, id: c.id,
         qrCodeBase64: c.qrCodeBase64, qrCodeText: c.qrCodeText,
-        expiresAt, amount: c.amount, createdAt: Date.now(), status: "pending",
+        expiresAt, amount: c.amount,
+        createdAt: Number.isFinite(serverCreatedMs) ? serverCreatedMs : Date.now(),
+        status: "pending",
         customerName: form.name.trim(), customerEmail: form.email.trim(),
         customerPhone: onlyDigits(form.phone), customerCpf: onlyDigits(form.cpf),
       });

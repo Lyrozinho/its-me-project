@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getPlanById } from "./plans";
 import { generateLicenseKey, generateLicensePassword, computeExpiresAt } from "./license";
+import type { UtmifyTracking } from "./utmify.server";
 
 export type IssuedLicense = {
   licenseKey: string;
@@ -18,6 +19,8 @@ export type IssueLicenseInput = {
   customerEmail: string;
   customerPhone?: string;
   customerCpf?: string;
+  tracking?: UtmifyTracking | null;
+  orderCreatedAt?: string; // ISO — should match the createdAt sent on waiting_payment
 };
 
 const onlyDigits = (v: string) => (v || "").replace(/\D+/g, "");
@@ -123,6 +126,35 @@ export const issueLicense = createServerFn({ method: "POST" })
 
     const { error } = await db.from("hyro_extension_licenses").insert(row);
     if (error) throw new Error(`Não foi possível emitir a licença: ${error.message}`);
+
+    // Fire-and-forget Utmify (paid). Never break license delivery if it fails.
+    try {
+      const { sendUtmifyOrder } = await import("./utmify.server");
+      const amountCents = Math.round(plan.price * 100);
+      const nowIso = new Date().toISOString();
+      const createdAt = data.orderCreatedAt && !Number.isNaN(new Date(data.orderCreatedAt).getTime())
+        ? data.orderCreatedAt
+        : nowIso;
+      await sendUtmifyOrder({
+        orderId: data.paymentId,
+        paymentMethod: provider === "card" ? "credit_card" : "pix",
+        status: "paid",
+        createdAt,
+        approvedAt: nowIso,
+        customer: {
+          name: data.customerName.trim(),
+          email,
+          phone: phone || null,
+          document: cpf || null,
+        },
+        product: { id: plan.id, name: `Love Hyro ${plan.duration}`, priceInCents: amountCents },
+        totalPriceInCents: amountCents,
+        gatewayFeeInCents: 0,
+        tracking: data.tracking ?? null,
+      });
+    } catch (e) {
+      console.error("[utmify:paid]", e);
+    }
 
     return {
       licenseKey,

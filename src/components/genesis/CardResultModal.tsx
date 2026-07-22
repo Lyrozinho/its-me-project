@@ -43,7 +43,10 @@ export function CardResultModal({
     issuedRef.current = true;
     setIssuing(true);
     setError(null);
-    issueLicense({ data: { ...buyer, provider: "card" } })
+    import("@/lib/utm-tracker").then(({ getUtms }) => {
+      const tracking = getUtms();
+      return issueLicense({ data: { ...buyer, provider: "card", tracking } });
+    })
       .then(async (l) => {
         setLicense(l);
         const dev = getDeviceInfo();

@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UtmifyRouteImport } from './routes/utmify'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as MinhasComprasRouteImport } from './routes/minhas-compras'
 import { Route as DownloadRouteImport } from './routes/download'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CheckoutPlanIdRouteImport } from './routes/checkout.$planId'
 
+const UtmifyRoute = UtmifyRouteImport.update({
+  id: '/utmify',
+  path: '/utmify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/utmify': typeof UtmifyRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/utmify': typeof UtmifyRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRoutesById {
@@ -61,6 +69,7 @@ export interface FileRoutesById {
   '/download': typeof DownloadRoute
   '/minhas-compras': typeof MinhasComprasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/utmify': typeof UtmifyRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
 }
 export interface FileRouteTypes {
@@ -70,6 +79,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/minhas-compras'
     | '/sitemap.xml'
+    | '/utmify'
     | '/checkout/$planId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/minhas-compras'
     | '/sitemap.xml'
+    | '/utmify'
     | '/checkout/$planId'
   id:
     | '__root__'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/download'
     | '/minhas-compras'
     | '/sitemap.xml'
+    | '/utmify'
     | '/checkout/$planId'
   fileRoutesById: FileRoutesById
 }
@@ -92,11 +104,19 @@ export interface RootRouteChildren {
   DownloadRoute: typeof DownloadRoute
   MinhasComprasRoute: typeof MinhasComprasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UtmifyRoute: typeof UtmifyRoute
   CheckoutPlanIdRoute: typeof CheckoutPlanIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/utmify': {
+      id: '/utmify'
+      path: '/utmify'
+      fullPath: '/utmify'
+      preLoaderRoute: typeof UtmifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -140,18 +160,9 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadRoute: DownloadRoute,
   MinhasComprasRoute: MinhasComprasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UtmifyRoute: UtmifyRoute,
   CheckoutPlanIdRoute: CheckoutPlanIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

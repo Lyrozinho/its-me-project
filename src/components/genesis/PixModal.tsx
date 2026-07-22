@@ -20,6 +20,7 @@ type Charge = {
   customerPhone?: string;
   customerCpf?: string;
   planId?: string;
+  createdAt?: string | number;
 };
 
 type Status = "pending" | "paid" | "expired" | "error";
@@ -113,14 +114,21 @@ export function PixModal({ charge, onClose, onMinimize }: { charge: Charge; onCl
     issuedRef.current = true;
     setIssuing(true);
     setLicenseError(null);
-    issueLicense({ data: {
-      planId: charge.planId,
-      paymentId: charge.id,
-      customerName: charge.customerName,
-      customerEmail: charge.customerEmail,
-      customerPhone: charge.customerPhone,
-      customerCpf: charge.customerCpf,
-    }})
+    import("@/lib/utm-tracker").then(({ getUtms }) => {
+      const tracking = getUtms();
+      const orderCreatedAt = charge.createdAt ? new Date(charge.createdAt).toISOString() : undefined;
+      return issueLicense({ data: {
+        planId: charge.planId!,
+        paymentId: charge.id,
+        customerName: charge.customerName!,
+        customerEmail: charge.customerEmail!,
+        customerPhone: charge.customerPhone,
+        customerCpf: charge.customerCpf,
+        provider: "pix",
+        tracking,
+        orderCreatedAt,
+      }});
+    })
       .then(async (l) => {
         setLicense(l);
         const dev = getDeviceInfo();
