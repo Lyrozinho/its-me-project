@@ -20,6 +20,7 @@ type Charge = {
   customerPhone?: string;
   customerCpf?: string;
   planId?: string;
+  createdAt?: string | number;
 };
 
 type Status = "pending" | "paid" | "expired" | "error";
