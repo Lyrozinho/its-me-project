@@ -74,9 +74,7 @@ export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
 
   const { configured } = getHyroDbConfig();
   if (!configured) {
-    // The production flow can still use UTMIFY_API_TOKEN from encrypted secrets.
-    // Avoid blocking the admin panel with a DB-only configuration error.
-    return;
+    throw new Error("Banco Hyro não configurado. Não foi possível salvar a credencial Utmify.");
   }
 
   const db = getHyroDb();

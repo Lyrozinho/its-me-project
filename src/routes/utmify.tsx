@@ -45,6 +45,8 @@ type UtmifyEvent = {
   is_test: boolean;
 };
 
+const UTMIFY_ADMIN_SESSION_KEY = "lovehyro:utmify-admin-token";
+
 function UtmifyAdminPage() {
   const [token, setToken] = useState("");
   const [unlocked, setUnlocked] = useState(false);
@@ -57,6 +59,14 @@ function UtmifyAdminPage() {
   const [testing, setTesting] = useState(false);
   const [events, setEvents] = useState<UtmifyEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+
+  const applyConfig = useCallback((c: ConfigView) => {
+    setCfg(c);
+    setApiToken(c.apiToken || "");
+    setPlatform(c.platform || "LoveHyro");
+    setEnabled(c.enabled);
+    setUnlocked(true);
+  }, []);
 
   const refreshEvents = useCallback(async (tk: string) => {
     setLoadingEvents(true);
@@ -77,6 +87,31 @@ function UtmifyAdminPage() {
     return () => clearInterval(id);
   }, [unlocked, token, refreshEvents]);
 
+  useEffect(() => {
+    if (unlocked || typeof window === "undefined") return;
+    const savedToken = window.sessionStorage.getItem(UTMIFY_ADMIN_SESSION_KEY)?.trim();
+    if (!savedToken) return;
+
+    let cancelled = false;
+    setToken(savedToken);
+    setLoading(true);
+    adminGetUtmifyConfig({ data: { token: savedToken } })
+      .then((c) => {
+        if (cancelled) return;
+        applyConfig(c);
+      })
+      .catch(() => {
+        window.sessionStorage.removeItem(UTMIFY_ADMIN_SESSION_KEY);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyConfig, unlocked]);
+
 
   
 
@@ -86,12 +121,10 @@ function UtmifyAdminPage() {
     setLoading(true);
     try {
       const c = await adminGetUtmifyConfig({ data: { token: token.trim() } });
-      setCfg(c);
-      setApiToken(c.apiToken || "");
-      setPlatform(c.platform || "LoveHyro");
-      setEnabled(c.enabled);
-      setUnlocked(true);
+      applyConfig(c);
+      window.sessionStorage.setItem(UTMIFY_ADMIN_SESSION_KEY, token.trim());
     } catch (err) {
+      window.sessionStorage.removeItem(UTMIFY_ADMIN_SESSION_KEY);
       setMsg({ type: "err", text: err instanceof Error ? err.message : "Falha ao autenticar" });
     } finally {
       setLoading(false);
@@ -183,7 +216,7 @@ function UtmifyAdminPage() {
               />
               <button
                 type="submit"
-                disabled={loading || !token}
+                disabled={loading || !token.trim()}
                 className="h-12 px-6 rounded-xl bg-[#5B3DF5] hover:bg-[#6a4cf7] disabled:opacity-60 font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
