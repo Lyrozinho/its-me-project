@@ -73,7 +73,7 @@ function UtmifyAdminPage() {
     } catch (err) {
       const t = err instanceof Error ? err.message : "Falha ao salvar";
       const hint = /relation.*does not exist|not found|schema cache|hyro_utmify_config/i.test(t)
-        ? "A tabela hyro_utmify_config ainda não existe no Supabase Hyro. Rode o SQL abaixo primeiro."
+        ? "A tabela hyro_utmify_config ainda não está disponível. O token seguro do servidor continua sendo usado."
         : t;
       setMsg({ type: "err", text: hint });
     } finally {

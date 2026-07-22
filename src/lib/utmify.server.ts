@@ -1,6 +1,6 @@
 // Utmify integration — outgoing order webhooks.
 // Server-only. Config lives in the external Hyro Supabase (hyro_utmify_config table).
-import { getHyroDb } from "./hyro-db.server";
+import { getHyroDb, getHyroDbConfig } from "./hyro-db.server";
 
 export type UtmifyConfig = {
   api_token: string;
@@ -9,26 +9,53 @@ export type UtmifyConfig = {
   updated_at?: string | null;
 };
 
+function envConfig(): UtmifyConfig {
+  return {
+    api_token: process.env.UTMIFY_API_TOKEN?.trim() ?? "",
+    platform: process.env.UTMIFY_PLATFORM?.trim() || "LoveHyro",
+    enabled: process.env.UTMIFY_ENABLED !== "false",
+    updated_at: null,
+  };
+}
+
 export async function getUtmifyConfigRow(): Promise<UtmifyConfig> {
+  const fallback = envConfig();
+  const { configured } = getHyroDbConfig();
+  if (!configured) return fallback;
+
   try {
     const db = getHyroDb();
-    const { data } = await db
+    const { data, error } = await db
       .from("hyro_utmify_config")
       .select("api_token,platform,enabled,updated_at")
       .eq("id", 1)
       .maybeSingle();
+
+    if (error) {
+      console.error("[utmify:config]", error.message);
+      return fallback;
+    }
+
     return {
-      api_token: String(data?.api_token ?? ""),
-      platform: String(data?.platform ?? "LoveHyro"),
-      enabled: data?.enabled !== false,
+      api_token: String(data?.api_token || fallback.api_token),
+      platform: String(data?.platform || fallback.platform),
+      enabled: data?.enabled ?? fallback.enabled,
       updated_at: data?.updated_at ?? null,
     };
-  } catch {
-    return { api_token: "", platform: "LoveHyro", enabled: false, updated_at: null };
+  } catch (e) {
+    console.error("[utmify:config]", e instanceof Error ? e.message : String(e));
+    return fallback;
   }
 }
 
 export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
+  const { configured } = getHyroDbConfig();
+  if (!configured) {
+    // The production flow can still use UTMIFY_API_TOKEN from encrypted secrets.
+    // Avoid blocking the admin panel with a DB-only configuration error.
+    return;
+  }
+
   const db = getHyroDb();
   const { error } = await db.from("hyro_utmify_config").upsert({
     id: 1,
