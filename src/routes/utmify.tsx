@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { KeyRound, Save, PlugZap, ShieldCheck, Send, Loader2, CheckCircle2, XCircle, RefreshCw, Clock } from "lucide-react";
 import { Background } from "@/components/genesis/Background";
-import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify } from "@/lib/utmify.functions";
+import { adminGetUtmifyConfig, adminSaveUtmifyConfig, adminTestUtmify, adminListUtmifyEvents } from "@/lib/utmify.functions";
 
 export const Route = createFileRoute("/utmify")({
   head: () => ({
@@ -16,6 +16,7 @@ export const Route = createFileRoute("/utmify")({
   component: UtmifyAdminPage,
 });
 
+
 type ConfigView = {
   hasToken: boolean;
   tokenPreview: string;
@@ -24,6 +25,20 @@ type ConfigView = {
   updatedAt: string | null;
 };
 
+
+type UtmifyEvent = {
+  id: number;
+  created_at: string;
+  order_id: string;
+  status: string;
+  payment_method: string;
+  amount_cents: number;
+  customer_email: string;
+  ok: boolean;
+  http_status: number | null;
+  error_message: string | null;
+  is_test: boolean;
+};
 
 function UtmifyAdminPage() {
   const [token, setToken] = useState("");
@@ -35,6 +50,29 @@ function UtmifyAdminPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [testing, setTesting] = useState(false);
+  const [events, setEvents] = useState<UtmifyEvent[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+
+  const refreshEvents = useCallback(async (tk: string) => {
+    setLoadingEvents(true);
+    try {
+      const r = await adminListUtmifyEvents({ data: { token: tk } });
+      setEvents(r.events as UtmifyEvent[]);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingEvents(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!unlocked) return;
+    refreshEvents(token.trim());
+    const id = setInterval(() => refreshEvents(token.trim()), 15000);
+    return () => clearInterval(id);
+  }, [unlocked, token, refreshEvents]);
+
+
   
 
   const unlock = async (e: React.FormEvent) => {
@@ -275,6 +313,90 @@ function UtmifyAdminPage() {
                 Endpoint destino: <code className="text-white/70">POST https://api.utmify.com.br/api-credentials/orders</code>
               </p>
             </section>
+
+            {/* Feed de eventos reais */}
+            <section className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5 sm:p-7">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-[15px] font-semibold">Últimos eventos enviados</h2>
+                  <p className="text-[12px] text-white/45 mt-0.5">Atualiza automaticamente a cada 15s.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => refreshEvents(token.trim())}
+                  disabled={loadingEvents}
+                  className="h-9 px-3 rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] text-[12px] font-semibold inline-flex items-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  {loadingEvents ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                  Atualizar
+                </button>
+              </div>
+
+              {events.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-white/10 p-6 text-center text-[13px] text-white/50">
+                  <Clock className="h-4 w-4 inline mr-2 opacity-60" />
+                  Nenhum evento registrado ainda. Assim que um PIX for gerado ou pago, ele aparece aqui.
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {events.map((ev) => (
+                    <li
+                      key={ev.id}
+                      className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 hover:border-white/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span
+                          className={`h-2 w-2 rounded-full shrink-0 ${
+                            ev.ok
+                              ? ev.status === "paid"
+                                ? "bg-emerald-400 shadow-[0_0_8px] shadow-emerald-400/60"
+                                : "bg-[#A78BFA] shadow-[0_0_8px] shadow-[#A78BFA]/60"
+                              : "bg-red-400"
+                          }`}
+                        />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 text-[13px] font-semibold truncate">
+                            <span className="font-mono text-white/85 truncate max-w-[160px]">{ev.order_id}</span>
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider ${
+                                ev.status === "paid"
+                                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/25"
+                                  : "bg-[#5B3DF5]/15 text-[#C4B0FF] border border-[#7A5CFF]/30"
+                              }`}
+                            >
+                              {ev.status}
+                            </span>
+                            <span className="px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider bg-white/[0.05] border border-white/10 text-white/70">
+                              {ev.payment_method === "credit_card" ? "cartão" : "pix"}
+                            </span>
+                            {ev.is_test && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                                teste
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-white/50 truncate">
+                            {ev.customer_email} • R$ {(ev.amount_cents / 100).toFixed(2).replace(".", ",")}
+                            {!ev.ok && ev.error_message && (
+                              <span className="text-red-300"> • {ev.error_message.slice(0, 60)}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-white/45 shrink-0 tabular-nums">
+                        {new Date(ev.created_at).toLocaleString("pt-BR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+
           </motion.div>
         )}
       </main>

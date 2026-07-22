@@ -80,3 +80,16 @@ export const adminTestUtmify = createServerFn({ method: "POST" })
     });
     return res;
   });
+
+export const adminListUtmifyEvents = createServerFn({ method: "POST" })
+  .inputValidator((d: { token: string }) => {
+    if (!d?.token) throw new Error("Token obrigatório");
+    return d;
+  })
+  .handler(async ({ data }) => {
+    assertToken(data.token);
+    const { listUtmifyLog } = await import("./utmify.server");
+    const rows = await listUtmifyLog(30);
+    return { events: rows };
+  });
+
