@@ -168,6 +168,7 @@ function RootComponent() {
 
   useEffect(() => {
     import("../lib/site-guard").then((m) => m.installSiteGuard());
+    import("../lib/utm-tracker").then((m) => m.captureUtms());
   }, []);
 
   return (
