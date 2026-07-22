@@ -74,7 +74,11 @@ export async function saveUtmifyConfigRow(c: UtmifyConfig): Promise<void> {
 
   const { configured } = getHyroDbConfig();
   if (!configured) {
-    throw new Error("Banco Hyro não configurado. Não foi possível salvar a credencial Utmify.");
+    // Sem banco Hyro no runtime (ex.: deploy fora do Lovable Cloud).
+    // O token da env (UTMIFY_API_TOKEN) segue sendo a fonte de verdade;
+    // não travamos o painel — apenas logamos.
+    console.warn("[utmify:save] Hyro DB indisponível — usando env como fonte.");
+    return;
   }
 
   const db = getHyroDb();
