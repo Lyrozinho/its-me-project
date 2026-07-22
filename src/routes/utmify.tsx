@@ -35,7 +35,7 @@ function UtmifyAdminPage() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [testing, setTesting] = useState(false);
-  const [copied, setCopied] = useState(false);
+  
 
   const unlock = async (e: React.FormEvent) => {
     e.preventDefault();
