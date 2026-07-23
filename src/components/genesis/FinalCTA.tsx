@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Rocket } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function FinalCTA() {
   return (
