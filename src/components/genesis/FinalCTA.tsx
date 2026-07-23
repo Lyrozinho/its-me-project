@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Download, Rocket } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 export function FinalCTA() {
   return (
@@ -44,20 +45,23 @@ export function FinalCTA() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="/checkout/HYRO-01001"
+              <Link
+                to="/checkout/$planId"
+                params={{ planId: "HYRO-01001" }}
+                search={(prev: Record<string, unknown>) => prev as never}
                 className="group inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-[#0B0715] hover:bg-white/90 transition-colors"
               >
                 Testar por R$ 7,90
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </a>
-              <a
-                href="/download"
+              </Link>
+              <Link
+                to="/download"
+                search={(prev: Record<string, unknown>) => prev as never}
                 className="inline-flex h-11 items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-5 text-sm font-semibold text-white/90 hover:bg-white/[0.08] transition-colors"
               >
                 <Download className="h-4 w-4 text-[#A78BFA]" />
                 Baixar agora
-              </a>
+              </Link>
             </div>
           </div>
         </motion.div>
