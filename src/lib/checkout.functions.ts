@@ -104,5 +104,10 @@ export const getPixStatus = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { checkPixStatus } = await import("./vexopay.server");
     const status = await checkPixStatus(data.id);
+    try {
+      const { updatePaymentStatus } = await import("./hyro-payments-log.server");
+      await updatePaymentStatus(data.id, status);
+    } catch { /* ignore */ }
     return { status };
   });
+
