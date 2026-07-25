@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { PixMiniCard } from "@/components/genesis/PixMiniCard";
+import { WhatsAppFloat } from "@/components/genesis/WhatsAppFloat";
 
 
 function NotFoundComponent() {
