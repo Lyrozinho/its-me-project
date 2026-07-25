@@ -72,8 +72,29 @@ export const createPixCharge = createServerFn({ method: "POST" })
       console.error("[utmify:pix-created]", e);
     }
 
+    // Persist payment attempt in the Hyro DB (fields exactly as typed).
+    try {
+      const { logPaymentEvent } = await import("./hyro-payments-log.server");
+      await logPaymentEvent({
+        gatewayId: charge.id,
+        provider: "pix",
+        status: "pending",
+        planId: plan.id,
+        planLabel: `${plan.duration} - ${plan.hours}`,
+        amountCents,
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone ?? null,
+        customerCpf: data.customerDocument,
+        tracking: data.tracking ?? null,
+      });
+    } catch (e) {
+      console.error("[hyro-log:pix-created]", e);
+    }
+
     return { ...charge, amount: plan.price, createdAt };
   });
+
 
 export const getPixStatus = createServerFn({ method: "GET" })
   .inputValidator((data: { id: string }) => {
