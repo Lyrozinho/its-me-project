@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { PixMiniCard } from "@/components/genesis/PixMiniCard";
+import { WhatsAppFloat } from "@/components/genesis/WhatsAppFloat";
 
 
 function NotFoundComponent() {
@@ -176,6 +177,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <PixMiniCard />
+      <WhatsAppFloat />
     </QueryClientProvider>
 
   );
