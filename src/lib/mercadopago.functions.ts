@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { UtmifyTracking } from "./utmify.server";
 
 function onlyDigits(v: string) { return (v || "").replace(/\D+/g, ""); }
 function validCPF(cpf: string) {
@@ -21,6 +22,8 @@ export type CreateCardPaymentInput = {
   customerName: string;
   customerEmail: string;
   customerDocument: string;
+  customerPhone?: string;
+  tracking?: UtmifyTracking | null;
 };
 
 export type CreateCardPaymentResult = {
@@ -43,7 +46,32 @@ export const createCardPayment = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<CreateCardPaymentResult> => {
     const { createCardPaymentServer } = await import("./mercadopago.server");
-    return createCardPaymentServer(data);
+    const { getPlanById } = await import("./plans");
+    const res = await createCardPaymentServer(data);
+
+    // Persist payment attempt in the Hyro DB (fields exactly as typed).
+    try {
+      const plan = getPlanById(data.planId);
+      const { logPaymentEvent } = await import("./hyro-payments-log.server");
+      await logPaymentEvent({
+        gatewayId: res.id,
+        provider: "card",
+        status: res.status,
+        planId: data.planId,
+        planLabel: plan ? `${plan.duration} - ${plan.hours}` : null,
+        amountCents: Math.round(res.amount * 100),
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone ?? null,
+        customerCpf: data.customerDocument,
+        gatewayStatusDetail: res.statusDetail || null,
+        tracking: data.tracking ?? null,
+      });
+    } catch (e) {
+      console.error("[hyro-log:card-created]", e);
+    }
+
+    return res;
   });
 
 export const getCardPaymentStatus = createServerFn({ method: "GET" })
@@ -53,5 +81,11 @@ export const getCardPaymentStatus = createServerFn({ method: "GET" })
   })
   .handler(async ({ data }) => {
     const { getCardPaymentStatusServer } = await import("./mercadopago.server");
-    return getCardPaymentStatusServer(data.id);
+    const res = await getCardPaymentStatusServer(data.id);
+    try {
+      const { updatePaymentStatus } = await import("./hyro-payments-log.server");
+      await updatePaymentStatus(data.id, res.status, res.statusDetail || null);
+    } catch { /* ignore */ }
+    return res;
   });
+

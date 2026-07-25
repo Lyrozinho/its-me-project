@@ -226,6 +226,7 @@ function CheckoutPage() {
     }
     setSubmitting(true);
     try {
+      const { getUtms } = await import("@/lib/utm-tracker");
       const res = await createCardPayment({
         data: {
           planId: plan.id,
@@ -235,8 +236,11 @@ function CheckoutPage() {
           customerName: form.name.trim(),
           customerEmail: form.email.trim(),
           customerDocument: onlyDigits(form.cpf),
+          customerPhone: onlyDigits(form.phone),
+          tracking: getUtms(),
         },
       });
+
       setCardResult(res);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Falha no cartão. Verifique os dados.";
