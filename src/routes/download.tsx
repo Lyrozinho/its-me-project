@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import extAsset from "@/assets/love-hyro-extension.zip.asset.json";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/download")({
   component: DownloadPage,
 });
 
-const EXT_URL = "/love-hyro-extension.zip";
+const EXT_URL = extAsset.url;
 const WHATSAPP_URL = "https://wa.me/5511999999999";
 
 function DownloadPage() {
